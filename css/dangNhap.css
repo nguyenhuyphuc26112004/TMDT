@@ -1,0 +1,60 @@
+
+.box {
+    margin: 50px auto;
+    width: 400px;
+    border-radius: 10px;
+    padding: 15px 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #CCD0D5;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px solid #000;
+}
+
+h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #2F4F4F;
+}
+.dau_vao {
+    border-bottom: 2px solid #ccc;
+    margin: 15px 0;
+}
+.dau_vao label{
+    font-size: 22px;
+}
+.dau_vao input {
+    width: 100%;
+    height: 40px;
+    color: #000;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+.register a {
+    color: blue;
+    text-decoration: none;
+}
+.btn {
+    text-align: center;
+}
+button {
+    background-color: #87CEFA;
+    padding: 10px 50px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 18px;
+    color: #2F4F4F;
+}
+
+.register {
+    text-align: center;
+    color: #010101;
+}
+

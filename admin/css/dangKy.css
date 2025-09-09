@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Điều chỉnh cách tính kích thước phần tử sao cho tính cả padding và border vào kích thước tổng thể..*/
+    font-family: sans-serif;
+    /* font-family: sans-serif: Đặt kiểu chữ mặc định là sans-serif, một kiểu chữ không có nét cong.*/
+}
+
+
+
+.box {
+    margin: 60px auto;
+    width: 500px;
+    border-radius: 10px;
+    /* border-radius: 10px: Bo góc cho phần tử. */
+    padding: 30px;
+    /* bóng border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #CCD0D5;
+
+    /* display: flex; */
+}
+
+form {
+    /* display: flex; */
+    justify-content: space-between;
+    border-radius: 15px solid #000;
+}
+
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #000;
+}
+
+.dau_vao {
+    position: relative;
+    /* position: relative: Đặt vị trí tương đối để phần tử bên trong có thể được định vị tương đối với nó. */
+    border-bottom: 2px solid #ccc;
+    /* border-bottom: 2px solid #ccc: Đặt viền dưới với màu xám (#ccc) và độ dày 2px. */
+    margin: 15px 0;
+}
+
+.dau_vao input {
+    /* border-bottom: 2px solid #ccc; */
+    height: 40px;
+    width: 100%;
+    color: #000;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+.gioi_tinh {
+    margin: 15px 0;
+}
+
+.gioi_tinh p {
+    margin-bottom: 10px;
+}
+
+.box a {
+    color: #010101;
+    text-decoration: underline;
+}
+
+
+/* .left{
+            width: 50%;
+        }
+
+        .right{
+            width: 50%;
+        }
+
+        .left input{
+            border-bottom: 2px solid #040404;
+        }
+        .right input{
+            width: 100%;
+            border-bottom: 2px solid #040404;
+        } */
+
+
+
+.btn-dangKy button {
+    background: #87CEFA;
+    color: #2F4F4F;
+    font-weight: 600;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 16px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.register {
+    text-align: center;
+    /* text-align: center: Căn giữa phần văn bản. */
+    margin-top: 30px;
+    color: #010101;
+}

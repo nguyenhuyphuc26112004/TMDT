@@ -1,0 +1,315 @@
+body{
+    background-color: #fdfdf3;
+}
+.header{
+    /* z-index: 999; */
+    position: relative;
+    background: linear-gradient(to bottom, #09e04d, #02b24e);
+
+}
+.info-header{
+    padding: 0 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+    font-size: 20px;
+    color: white;
+}
+.right-info-header{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.right-info{
+    position: relative;
+    display: flex;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+}
+.right-info i{
+    font-size: 30px;
+}
+.right-info p{
+    margin: 10px;
+}
+.log{
+    position: absolute;
+    top: 100%;
+    display: none;
+    z-index: 100;
+}
+.login a{
+    color: white;
+    text-decoration: none;
+    font-size: 18PX;
+}
+.login{
+    font-size: 16px;
+    padding-left: 10px;
+    width: 150px; /* Chiều rộng mỗi ô */
+    height: 30px; /* Chiều cao mỗi ô */
+    line-height: 30px; /* Căn giữa nội dung */
+    transition: background-color 0.3s;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.login:hover {
+    background-color: white;
+}
+.login:hover a{
+    color: black;
+}
+.right-info:hover .log{
+    display: block;
+}
+.account{
+    display: flex;
+    margin: 0 30px;
+    align-items: center;
+}
+.account p{
+    margin: 0 10px;
+}
+.mid-header{
+    padding: 0 100px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1;
+}
+.mid-header img{
+    width: 100px;
+    height: 60px;
+    margin-right: 20px;
+    border-radius: 3px;
+}
+.search{
+    position: relative;
+    font-size: 20px;
+}
+.search input {
+    padding-left: 10px;
+    z-index: 1;
+    margin-right: 30px;
+    width: 400px;
+    height: 35px;
+    background-color:white;
+    border: 2px solid white;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+.grass{
+    padding: 4px 10px;
+    color: white;
+    z-index: 2;
+    cursor: pointer;
+    position: absolute;
+    right: 40px; /* Điều chỉnh khoảng cách từ bên phải */
+    top: 50%;
+    transform: translateY(-50%); /* Giữa vertial */
+    /* pointer-events: none; Giúp không cản trở sự tương tác với input */
+    background-color: #02b24e;
+    border-radius: 3px;
+}
+.phone{
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+}
+.info-phone{
+    margin-left: 10px;
+}
+.info-phone p{
+    margin: 8px;
+}
+.sdt{
+    font-size: 22px;
+}
+.nav{
+    padding: 0 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+    color: white;
+    font-size: 20px;
+}
+.left-nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+    color: white;
+    font-size: 20px;
+}
+.list{
+    margin: 0;
+    margin-right: 40px;
+    padding: 0 10px;
+    background-color: #0d9c48;
+    display: flex;
+    align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+}
+.list p{
+    padding-left: 10px;
+}
+.left-nav a{
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 22px;
+}
+.right-nav{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.right-nav a{
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 22px;
+}
+.gioHang{
+    width: 40px;
+    height: 40px;
+    color: white;
+    margin-top: 20px;
+    cursor: pointer;
+}
+.gioHang i{
+    margin-left: 5px;
+}
+.mid{
+    display: flex;
+    background-color: #eef0f4;
+    padding-bottom: 20px;
+    border-bottom: 1px solid white;
+}
+.left-mid,
+.left-container{
+    margin-left: 100px;
+}
+.container{
+    display: flex;
+    border-bottom: 2px solid #e7e7e7;
+}
+.left-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.bannerDoc img{
+    width: 266px;
+    height: 400px;
+    box-shadow: rgba(0, 0, 0, 0.4) 2px 10px 10px 2px;
+    margin-top: 30px;
+    border-radius: 10px;
+}
+.right-container{
+    margin: 20px 0 0 55px;
+}
+.tieude{
+    margin-top: 10px;
+    font-size: 26px;
+    color: #c4596c;
+}
+
+.price{
+    font-size: 20px;
+    color: #737373;
+}
+/* .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.product button{
+    background-color: #28c361;
+    padding: 8px 35px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.btn a{
+    font-size: 18px;
+    text-decoration: none;
+    color: white;    
+} */
+.list-product{
+    font-size: 20px;
+    background-color: white;
+    width: 266px;
+    height: auto;
+    border: 1px solid #dbdbdb;
+    border-radius: 0 0 5px 5px;
+}
+.list-product a{
+    text-decoration: none;
+    color: #2b2b2b;
+}
+.item{
+    cursor: pointer;
+    padding: 8px 10px;
+    border-bottom: 1px solid #ececec;
+}
+.item:hover a{
+    color: white;
+}
+.item:hover{
+    background-color: #28c361;
+}
+.right-mid{
+    position: relative;
+
+    margin: 20px 0;
+    margin-left: 50px;
+}
+.right-mid i{
+    font-size: 30px;
+    color: rgb(179, 171, 171);
+    cursor: pointer;
+}
+.right-mid i:hover{
+    color: #02b24e;
+}
+.main-picture img {
+    display: none; /* Ẩn tất cả ảnh ban đầu */
+}
+.main-picture .active {
+    display: block; /* Hiển thị ảnh có lớp active */
+}
+.prev{
+    position: absolute;
+    top: 45%;
+    left: -15px;
+}
+.next{
+    position: absolute;
+    top: 45%;
+    right: -15px;
+}
+.footer{
+    margin-top: 20px;
+    padding: 0 200px;
+    background-color: white;
+    color: black;
+}
+.top-footer{
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid;
+}
+.noi_dung{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 20px;
+}
+.noi_dung a{
+    text-decoration: none;
+    color: black;
+}
+.bottom-footer{
+    padding-bottom: 10px;
+}

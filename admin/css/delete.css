@@ -1,0 +1,49 @@
+.delete {
+    margin: 130px 30px;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+
+}
+
+.delete .title {
+    border-bottom: 1px solid #979494;
+    margin: 25px 0px 15px 0px;
+}
+
+.warning {
+    background-color: #f925164e;
+    color: rgb(76, 12, 12);
+    justify-content: space-between;
+    align-items: center;
+    width: 98.7%;
+    padding: 3px 10px;
+    font-size: 16px;
+    border-radius: 2px;
+
+}
+
+.del {
+    margin-top: 25px;
+}
+
+button {
+    border-radius: 5px;
+    border: 1px solid #acacac;
+    padding: 8px 25px;
+    height:36.8px ;
+    width: 99.9px;
+    font-size: 17px;
+    box-sizing: border-box;
+}
+
+.back {
+    text-align: center; 
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid #acacac;
+    padding: 8px 25px;
+    height: 49px;
+    width: 100px;
+    font-size: 17px;
+    box-sizing: border-box;
+}

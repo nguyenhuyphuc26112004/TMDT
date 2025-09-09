@@ -1,0 +1,39 @@
+.view {
+    margin: 100px auto;
+    height: 100vh;
+    width:68%;
+    font-family: Arial, sans-serif;
+}
+.view .title {
+    border-bottom: 1px solid #979494;
+    margin: 25px 0px 25px 0px;
+    font-size: 24px;
+}
+.main table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 13px;
+}
+/* chọn các phần tử thứ tự chẵn (2, 4, 6, ...) trong số các hàng <tr> */
+tr:nth-child(even) {
+    /* Áp dụng màu nền (một tông màu xám nhạt) cho các hàng chẵn được chọn */
+    background-color: #dddddd;
+}
+.submit {
+    margin: 25px 43.2%;
+}
+.submit > a {
+    text-decoration: none;
+    border-radius: 5px;
+    border:1px solid #acacac;
+    padding:8px 23%;
+    height:20px;
+    /* width:60px; */
+    font-size: 17px;
+}

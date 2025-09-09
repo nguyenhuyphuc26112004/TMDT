@@ -1,0 +1,129 @@
+
+
+.update {
+    margin: 130px 50px;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    width: 60%;
+}
+
+.update .title {
+    border-bottom: 1px solid #979494;
+    margin: 25px 0px 20px 0px;
+}
+
+form {
+    /* display: flex; */
+    justify-content: space-between;
+}
+
+.gr {
+    display: flex;
+}
+
+.infor {
+    margin-right: 2.5%;
+    width: 50%;
+    position: relative;
+    /* position: relative: Đặt vị trí tương đối để phần tử bên trong có thể được định vị tương đối với nó. */
+
+}
+.infor input {
+    margin: 15px 0;
+    border-radius: 3px;
+    border: 1px solid #acacac;
+    height: 30px;
+    width: 97%;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    font-size: 16px;
+}
+
+.infor #mode {
+    /* margin:0px 15px; */
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-top: 32px;
+    padding: 7px 12px;
+    font-size: 16px;
+    color: #000;
+    border-radius: 3px;
+    border: 1px solid #acacac;
+
+}
+
+.infor #payment {
+    margin: 5px 15px;
+    padding: 5px 12px;
+    font-size: 16px;
+    color: #000;
+    border-radius: 3px;
+    border: 1px solid #acacac;
+
+}
+
+.infor #sex {
+    margin: 5px 15px;
+    padding: 5px 12px;
+    font-size: 16px;
+    color: #000;
+    border-radius: 3px;
+    border: 1px solid #acacac;
+}
+
+.infor #loai {
+    margin-top: 15px;
+    padding: 6.5px 12px;
+    font-size: 16px;
+    color: #000;
+    border-radius: 3px;
+    border: 1px solid #acacac;
+
+}
+
+.mota {
+    margin: 10px 0px;
+}
+
+.mota>textarea {
+    margin-top: 5px;
+    width: 97%;
+}
+
+.infor #anhSanPham {
+    padding: 0px;
+    margin: 5px 0px;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+}
+
+.submit {
+    margin: 25px 38%;
+    display: flex;
+
+}
+
+.submit>button {
+    border-radius: 5px;
+    border: 1px solid #acacac;
+    padding: 8px 2%;
+    height: 37.6px;
+    width: 100%;
+    font-size: 17px;
+    box-sizing: border-box;
+    margin-left: 6px;
+    margin: 20px 0;
+}
+
+.submit>a {
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid #acacac;
+    padding: 8px 5%;
+    height: 20px;
+    width: 85%;
+    font-size: 17px;
+
+}

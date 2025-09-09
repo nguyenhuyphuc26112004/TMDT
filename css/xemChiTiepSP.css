@@ -1,0 +1,101 @@
+
+body{
+    background-color: #eef0f4;
+}
+.product{
+    display: flex;
+    margin: 100px 350px;
+    justify-content: center;
+    padding: 20px;
+    border: 2px solid rgb(210, 202, 202);
+    border-radius: 10px;
+}
+.image-product{
+    margin-right: 20px;
+}
+.product img{
+    width: 350px;
+    height: 350px;
+    border-radius: 10px;
+}
+.info-product{
+    padding-top: 10px;
+    margin-left: 20px;
+    font-size: 26px;
+}
+.info-product p{
+    margin: 10px 0;
+}
+.price{
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+.soLuong{
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.buy-amount button{
+    width: 35px;
+    height: 35px;
+    outline: none;
+    border: 1px solid #ececec;
+    cursor: pointer;
+}
+.buy-amount button:hover{
+    background-color: #ececec;
+}
+.buy-amount button i{
+    color: #909090;
+}
+button:hover i{
+    color: #4f4f4f;
+}
+.buy-amount{
+    display: flex;
+    margin-left: 30px;
+}
+input{
+    width: 40px;
+    text-align: center;
+    border: 1px solid #ececec;
+
+}
+.btn{
+    display: flex;
+    align-items: center;
+}
+.btn button{
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.themGioHang button{
+    color: #151534;
+    background: none;
+    padding: 10px;
+    font-size: 18px;
+    border: 1px solid #d9d9d9;
+}
+.themGioHang button:hover{
+    color: #28c361;
+    border-color: #28c361;
+}
+.datHang button{
+    background-color: #28c361;
+    padding: 10px;
+    border: none;
+    font-size: 18px;
+}
+.moTa{
+    margin: 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #d9d9d9;
+}
+.datHang a{
+    font-size: 18px;
+    text-decoration: none;
+    color: white;    
+}
