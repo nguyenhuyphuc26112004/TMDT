@@ -1,67 +1,178 @@
-.box {
-    margin: 30px auto;
-    width: 500px;
-    border-radius: 10px;
-    padding:0 30px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #CCD0D5;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
-form {
-    /* display: flex; */
-    justify-content: space-between;
-    border-radius: 15px solid #000;
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f7fa;
 }
-h2 {
-    font-size: 36px;
+
+/* hiệu ứng load trang */
+.page {
+    animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* khung register */
+.register {
+    width: 800px;
+    height: 450px;
+    background: #fff;
+    border-radius: 12px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ================= LEFT ================= */
+.left-register {
+    width: 60%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.left-register h2 {
+    font-size: 28px;
     margin-bottom: 20px;
-    color: #000;
+    color: #333;
 }
-.dau_vao {
+
+.left-register form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* input box */
+.input-box {
     position: relative;
-    border-bottom: 2px solid #ccc;
-    margin: 15px 0;
+    margin-bottom: 12px;
 }
-.dau_vao input {
-    z-index: 1;
-    height: 40px;
+
+.input-box input {
     width: 100%;
-    color: #000;
-    background: transparent;
+    padding: 12px 40px 12px 15px;
     border: none;
-    outline: none;
+    border-radius: 8px;
+    background: #f2f2f2;
+    font-size: 14px;
+}
+
+.input-box input:focus {
+    outline: 1px solid #1dd3c6;
+    background: #fff;
+}
+
+/* icon */
+.input-box i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+/* ===== ERROR ===== */
+.error {
+    display: none;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #e74c3c;
+    text-align: left;
+    padding-left: 15px;
+}
+/* khi có lỗi thì hiện thông báo */
+
+.input-box.has-error .error {
+    display: block;
+}
+/* input viền đỏ */
+.input-box.has-error input {
+    outline: 1px solid red;
+}
+
+/* icon nhích lên để tránh đè error */
+.input-box.has-error i {
+    top: 33.3%;
+    color: red;
+}
+
+/* button */
+.left-register button {
+    width: 75%;
+    margin: 0 auto ;
+    padding: 12px;
+    background: linear-gradient(to right, #094b46, #48bfee);
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.left-register button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* ================= RIGHT ================= */
+.right-register {
+    width: 40%;
+    background: linear-gradient(90deg, #094b46, #48bfee);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+    border-radius: 35% 12px 12px 35%;
+}
+
+.right-register h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.right-register p {
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.right-register button {
+    padding: 10px 40px;
+    background: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
     font-size: 16px;
 }
-.eye{
-    padding: 0 10px;
-    color: #cecece;
-    z-index: 2;
-    cursor: pointer;
-    position: absolute;
-    right: 0; /* Điều chỉnh khoảng cách từ bên phải */
-    top: 70%;
-    transform: translateY(-50%); /* Giữa vertial */
-    /* pointer-events: none; Giúp không cản trở sự tương tác với input */
-}
-.gioi_tinh {
-    margin: 15px 0;
-}
-.gioi_tinh p {
-    margin-bottom: 10px;
-}
-.btn-dangKy{
-    text-align: center;
-    margin-bottom: 20px;
-    margin-top: 10px;
-}
-.btn-dangKy button {
-    background: #87CEFA;
-    color: #2F4F4F;
-    font-weight: 600;
-    border: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    border-radius: 3px;
-    font-size: 18px;
-    border-radius: 5px;
-    width: 50%;
+
+.right-register button:hover {
+    background: #fff;
+    color: #48bfee;
 }

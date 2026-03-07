@@ -55,28 +55,24 @@ function updateProductById($con, $id, $ten, $loai, $don_vi, $so_luong, $gia, $an
         return "lỗi câu lệnh sql";
     }
 }
+// File: ../php/admin/updateObjectById.php
 
-function updateOrderById($con, $id, $diaChi, $trangThai)
-{
-
-    // sql
-    $sql = "UPDATE don_hang SET dia_chi = ? , trang_thai = ? WHERE id = ? ";
-
-    // chuan bị cau lenh sql
-    $stmt = $con->prepare($sql); // true nếu sẵn sàng
-
-    if ($stmt) {
-
-        // gắn các tham số cho câu lệnh
-        $stmt->bind_param("ssi", $diaChi, $trangThai, $id);
-
-        // thuc thi câu lệnh
-        if ($stmt->execute()) {
-            return "đã cập nhật Order vào database";
-        } else {
-            return "Lỗi không cập nhật được Order vào database";
-        }
-    } else {
-        return "lỗi câu lệnh sql";
+function updateOrderById($con, $id, $diaChi, $trangThai, $trangThaiThanhToan) {
+    // Logic tự động: Nếu vận chuyển là 'Đã nhận hàng', ép trạng thái thanh toán thành 'Đã thanh toán'
+    if ($trangThai === 'Đã nhận hàng') {
+        $trangThaiThanhToan = 'Đã thanh toán';
     }
+
+    $sql = "UPDATE don_hang SET 
+            dia_chi = ?, 
+            trang_thai = ?, 
+            trang_thai_thanh_toan = ? 
+            WHERE id = ?";
+            
+    $stmt = $con->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("sssi", $diaChi, $trangThai, $trangThaiThanhToan, $id);
+        return $stmt->execute(); // Trả về true/false để bên gọi (capNhat_DH.php) biết mà redirect
+    }
+    return false;
 }

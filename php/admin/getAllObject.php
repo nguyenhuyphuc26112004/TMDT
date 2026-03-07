@@ -8,10 +8,6 @@ require($_SERVER['DOCUMENT_ROOT'] . '/TMDT/php/connectMysql.php');
 
 // $con thuộc file connectMysql.php
 // hàm
-function hello()
-{
-    return "hello from getAllObject.php";
-}
 
 function getAll_object($con, $tableName)
 {

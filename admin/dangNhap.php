@@ -1,9 +1,46 @@
 <?php
 session_start();
-// Nếu đã đăng nhập và là admin, chuyển về trang admin
-if (isset($_SESSION['tenDangNhap']) && $_SESSION["vaiTro"] == 2) {
-    header('Location: index.php');
+require('../php/checkLogin.php'); 
+
+// 1. Nếu đã đăng nhập và là admin, chuyển thẳng về trang quản lý
+if (isset($_SESSION['tenDangNhap']) && isset($_SESSION["vaiTro"]) && $_SESSION["vaiTro"] == 2) {
+    header('Location: quanLySP.php');
     exit;
+}
+
+// 2. Xử lý khi người dùng nhấn nút Đăng Nhập
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $tenDangNhap = $_POST['tenDangNhap'] ?? '';
+    $matKhau = $_POST['matKhau'] ?? '';
+
+    // Kiểm tra không để trống dữ liệu trước khi xử lý
+    if (!empty($tenDangNhap) && !empty($matKhau)) {
+        
+        // Gọi hàm checkLoginAdmin từ file checkLogin.php
+        if (checkLoginAdmin($con, $tenDangNhap, $matKhau)) {
+            
+            // Lấy thông tin ID để lưu vào session
+            $sql = "SELECT id FROM nguoi_dung WHERE ten_dang_nhap = ? AND id_vai_tro = 2";
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("s", $tenDangNhap);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($nguoiDung = $result->fetch_assoc()) {
+                $_SESSION["tenDangNhap"] = $tenDangNhap;
+                $_SESSION["idNguoiDung"] = $nguoiDung['id'];
+                $_SESSION["vaiTro"] = 2; // Gán vai trò Admin
+                
+                header('Location: quanLySP.php');
+                exit;
+            }
+            $stmt->close();
+        } else {
+            // Sai mật khẩu hoặc không phải admin
+            header('Location: dangNhap.php?loi');
+            exit;
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -22,73 +59,16 @@ if (isset($_SESSION['tenDangNhap']) && $_SESSION["vaiTro"] == 2) {
 
         .red {
             color: red;
-
         }
     </style>
 </head>
 
 <body>
-    <?php
-    require('../php/checkLogin.php');
-    // ktra biến có giá trị hay không
-    if (
-        $_SERVER['REQUEST_METHOD'] == 'POST'
-        && !empty($_POST['tenDangNhap'])
-        && !empty($_POST['matKhau'])
-    ) {
-        $tenDangNhap = $_POST['tenDangNhap'];
-        $matKhau = $_POST['matKhau'];
-
-        // gọi hàm checkLoginAdmin của checkLogin.php
-        if (checkLoginAdmin($con, $tenDangNhap, $matKhau)) {
-            // người dùng đăng nhập thành công -> bắt đầu 1 phiên làm việc
-
-
-            /*
-                    Logic đăng nhập
-                - lúc người dùng đăng nhâp thành công -> đưa tenDangNhap và id lên session
-                - đưa id lên để thuận tiện lấy id của người dùng khi thao tác với giỏ hàng
-            */
-            session_start();
-            $_SESSION["tenDangNhap"] = "$tenDangNhap";
-
-            $sql = "SELECT * FROM nguoi_dung WHERE ten_dang_nhap = ? ";
-
-            // chuẩn bị câu lệnhlệnh
-            $stmt = $con->prepare($sql);
-
-
-            // gán các tham số vào câu lệnh
-            $stmt->bind_param("s", $tenDangNhap);
-
-            // Thực thi câu lệnh SQL
-            $stmt->execute();
-
-            // Lấy kết quả
-            $result = $stmt->get_result();
-
-            // lấy 1 dòng đầu tiên trong mảng kq ( có thể null )
-            $nguoiDung =  $result->fetch_assoc();
-
-            $idNguoiDung = $nguoiDung['id'];
-            $_SESSION["idNguoiDung"] = "$idNguoiDung";
-
-            $_SESSION["vaiTro"] = 2;
-            header('Location: quanLySP.php');
-            exit; // không thực hiện các câu lệnh phía sau
-        } else {
-            header('Location: dangNhap.php?loi');
-            exit;
-        }
-    }
-
-    ?>
-    <!-- end header -->
     <div class="box">
         <form id="formDangNhap" action="dangNhap.php" method="post">
             <h2>Đăng Nhập</h2>
-            <p style="color: red"><?php echo isset($_GET['loi']) ? "Đăng nhập thất bại" : " "; ?></p>
-            <p style="color: green"><?php echo isset($_GET['dang-xuat']) ? "Đăng xuất thành công " : " "; ?></p>
+            <p style="color: red"><?php echo isset($_GET['loi']) ? "Đăng nhập thất bại" : ""; ?></p>
+            <p style="color: green"><?php echo isset($_GET['dang-xuat']) ? "Đăng xuất thành công " : ""; ?></p>
 
             <div class="dau_vao">
                 <label for="tenDangNhap">Tên đăng nhập</label>
@@ -106,12 +86,7 @@ if (isset($_SESSION['tenDangNhap']) && $_SESSION["vaiTro"] == 2) {
         </form>
     </div>
 
-    <script src="js/validDangNhap.js">
-
-    </script>
-    <!-- footer -->
-
-    <!-- end footer -->
+    <script src="js/validDangNhap.js"></script>
 </body>
 
 </html>

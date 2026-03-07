@@ -1,143 +1,131 @@
 <?php
-// ktra người dùng đăng nhập hay chưa
-require('../php/checkSession.php');
+// 1. XỬ LÝ LOGIC & DỮ LIỆU
+require_once('../php/checkSession.php');
 checkSession(2);
+
+require_once('../php/admin/getAllObject.php');
+require_once('../php/admin/cart.php'); // $con nằm trong file này hoặc connectMysql
+
+// Lấy từ khóa tìm kiếm người dùng
+$searchTerm = isset($_GET['search']) ? mysqli_real_escape_string($con, trim($_GET['search'])) : '';
+
+if (!empty($searchTerm)) {
+    // Truy vấn lọc theo ID, Họ tên hoặc Tên đăng nhập
+    $sql = "SELECT * FROM nguoi_dung WHERE id LIKE '%$searchTerm%' OR ho_ten LIKE '%$searchTerm%' OR ten_dang_nhap LIKE '%$searchTerm%'";
+    $result = mysqli_query($con, $sql);
+    $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
+} else {
+    // Lấy toàn bộ người dùng
+    $users = getAll_object($con, 'nguoi_dung');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý người dùng</title>
-    <link rel="stylesheet" href="./css/header1.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
-    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
-    crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <style>
-        .container{
-            display: flex;
-        }
-        .quanLyDH{
-            margin-top: 50px;
-            margin-left: 100px;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        td,
-        th{
-            font-size: 18px;
-            border: 1px solid #a19898;
-            text-align: center;
-            padding: 15px;
-        }
-        td a,
-        .create {
-            text-decoration: none;
-            padding: 8px 10px;
-            border: 1px solid white;
-            border-radius: 5px;
-            margin: 0 5px;
-        }
-        .title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-        }
-        .create {
-            background-color: #24ACF2;
-            color: white;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: center;
-            margin: 20px 0;
-        }
-        td a,
-        .title .create:hover {
-            background-color: #1c8cd1;
-            /* Màu nút khi hover */
-        }
-        .xem{
-            background-color:rgb(8, 209, 95);
-            color: white;
-        }
-        .capNhat{
-            background-color:rgb(247, 243, 15);
-            color: black;
-        }
-        .xoa{
-            background-color:rgba(227, 20, 5, 0.72);
-            color: white;
-        }
+        body { background-color: #f4f5f7; font-family: Arial, sans-serif; margin: 0; }
+        .container { display: flex; }
+        .trangchu { padding: 0 20px; display: flex; flex-direction: column; width: 330px; background-color: #dbdbdb; min-height: 100vh; }
+        .tieude { border-bottom: 1px solid #b3b3b3; font-weight: bold; }
+        .tieude p { font-size: 26px; margin: 15px 0; }
+        .tieude i { margin-right: 5px; }
+        .trangchu img { margin: 20px auto; border-radius: 5px; width: 120px; height: 100px; display: block; }
+        .list-tieude { padding: 0 20px 20px 30px; }
+        .list-tieude p { font-size: 20px; margin: 15px 0; color: #333; }
+        .danhmuc { padding-bottom: 10px; border-bottom: 1px solid #b3b3b3; }
+        .danhmuc a { display: flex; align-items: center; padding: 10px; font-size: 18px; text-decoration: none; color: #6c6c6c; transition: 0.3s; }
+        .danhmuc a:hover { color: #000; background: #ccc; border-radius: 4px; }
+        .danhmuc a i { width: 25px; text-align: center; margin-right: 10px; }
+        .quanLyDH { margin-top: 50px; margin-left: 20px; width: 75%; flex: 1; padding-right: 20px; }
+        .title { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .title h2 { margin: 0; }
+        .search-container { margin-bottom: 20px; display: flex; }
+        .search-form { display: flex; gap: 10px; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .search-form input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; width: 300px; outline: none; }
+        .btn-search { background-color: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-reset { background-color: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 14px; display: flex; align-items: center; }
+        table { border-collapse: collapse; width: 100%; background: #fff; }
+        td, th { font-size: 14px; border: 1px solid #a19898; text-align: center; padding: 12px 8px; }
+        th { background-color: #f4f4f4; font-size: 16px; }
+        .action-group { display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; }
+        .action-group a { text-decoration: none; padding: 6px 10px; border-radius: 4px; font-size: 13px; color: white !important; display: inline-flex; align-items: center; gap: 4px; transition: 0.2s; }
+        .action-group a:hover { opacity: 0.8; transform: scale(1.05); }
+        .btn-info { background-color: #28a745; }
+        .btn-edit { background-color: #ffc107; color: #212529 !important; }
+        .btn-delete { background-color: #dc3545; }
     </style>
 </head>
-
 <body>
-    <!-- header -->
-    <?php
-    require('../php/admin/getAllObject.php');
-    require('../php/admin/cart.php');
-    // hàm của admin/getAll_object.php
-    $users = getAll_object($con, 'nguoi_dung');
-    ?>
     <div class="container">
         <div class="trangchu">
-            <img src="./logo/logo.jpg" alt="">
-            <div class="tieude">
-                <p><i class="fa-solid fa-bars"></i> Quản lý hệ thống</p>
-            </div>
+            <img src="./logo/logo.jpg" alt="Logo">
+            <div class="tieude"><p><i class="fa-solid fa-bars"></i> Quản lý hệ thống</p></div>
             <div class="list-tieude">
                 <p><i class="fa-solid fa-layer-group"></i> Danh mục quản lý</p>
-                    <div class="danhmuc">
-                        <a href="quanLySP.php">Quản lý sản phẩm</a>
-                        <a href="quanLyKH.php">Quản lý người dùng</a>
-                        <a href="quanLyDH.php">Quản lý đơn hàng</a>
-                    </div>
-                <p> <i class="fa-solid fa-layer-group"></i> Đăng nhập hệ thống</p>
-                    <div class="danhmuc">
-                        <a href="../php/admin/logoutAdmin.php"> <i class="fa-solid fa-circle-user"></i> Đăng xuất</a>
-                    </div>
+                <div class="danhmuc">
+                    <a href="quanLyKH.php"><i class="fa-solid fa-users"></i> Quản lý người dùng</a>
+                    <a href="quanLySP.php"><i class="fa-solid fa-box"></i> Quản lý sản phẩm</a>
+                    <a href="quanLyDH.php"><i class="fa-solid fa-cart-shopping"></i> Quản lý đơn hàng</a>
+                    <a href="thongKe.php" style="font-weight:bold;"><i class="fa-solid fa-chart-line"></i> Thống kê</a>
+                </div>
+                <p><i class="fa-solid fa-user-gear"></i> Tài khoản</p>
+                <div class="danhmuc">
+                    <a href="../php/admin/logoutAdmin.php"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+                </div>
             </div>
         </div>
+
         <div class="quanLyDH">
             <div class="title">
-                <h2>Bảng người dùng</h2>
-                <a href="dangKy.php" class="create">Tạo mới KH</a>
+                <h2><i class="fa-solid fa-user-group"></i> Danh sách người dùng</h2>
+                <a href="dangKy.php" style="text-decoration: none; background: #007bff; color: white; padding: 8px 15px; border-radius: 4px; font-weight: bold;">
+                    <i class="fa-solid fa-user-plus"></i> Tạo mới KH
+                </a>
             </div>
-            <table>
-                <tr>
-                    <th>Id</th>
-                    <th>Họ và tên</th>
-                    <th>Tên đăng nhập</th>
-                    <th>Số điện thoại</th>
-                    <th>Hoạt động</th>
-                </tr>
-                <?php
-                foreach ($users as $user) {
-                ?>
-                    <tr>
-                        <td><?php echo $user['id'] ?></td>
-                        <td><?php echo $user['ho_ten'] ?></td>
-                        <td><?php echo $user['ten_dang_nhap'] ?></td>
-                        <td><?php echo $user['so_dien_thoai'] ?></td>
-                        <td>
-                            <a class = "xem" href="xemCT_KH.php?id=<?php echo $user['id'] ?>">Xem chi tiết</a>
-                            <a class = "capNhat" href="capNhat_KH.php?id=<?php echo $user['id'] ?>">Cập nhật</a>
-                            <a class = "xoa" href="xoa_KH.php?id=<?php echo $user['id'] ?>">Xóa</a>
-                        </td>
-                    </tr>
-                <?php
 
-                }
-                ?>
+            <div class="search-container">
+                <form action="" method="GET" class="search-form">
+                    <input type="text" name="search" placeholder="Nhập tên, ID hoặc username..." value="<?php echo htmlspecialchars($searchTerm); ?>">
+                    <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm</button>
+                    <?php if(!empty($searchTerm)): ?><a href="quanLyKH.php" class="btn-reset">Làm mới</a><?php endif; ?>
+                </form>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th width="80">ID</th>
+                        <th widht = "300px">Họ và tên</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Số điện thoại</th>
+                        <th width="300px">Hoạt động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (count($users) > 0): ?>
+                        <?php foreach ($users as $user): ?>
+                            <tr>
+                                <td><b>#<?php echo $user['id'] ?></b></td>
+                                <td style="text-align: left; padding-left: 15px;"><?php echo $user['ho_ten'] ?></td>
+                                <td><?php echo $user['ten_dang_nhap'] ?></td>
+                                <td><?php echo $user['so_dien_thoai'] ?></td>
+                                <td class="action-group">
+                                    <a class="btn-info" href="xemCT_KH.php?id=<?php echo $user['id'] ?>"><i class="fa-solid fa-eye"></i> Xem</a>
+                                    <a class="btn-edit" href="capNhat_KH.php?id=<?php echo $user['id'] ?>"><i class="fa-solid fa-user-pen"></i> Sửa</a>
+                                    <a class="btn-delete" href="xoa_KH.php?id=<?php echo $user['id'] ?>"><i class="fa-solid fa-trash-can"></i> Xóa</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr><td colspan="5">Không tìm thấy người dùng nào phù hợp.</td></tr>
+                    <?php endif; ?>
+                </tbody>
             </table>
         </div>
     </div>
-    
 </body>
-
 </html>

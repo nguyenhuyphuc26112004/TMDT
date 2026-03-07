@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="./css/main.css">
     <title>Document</title>
 </head>
+
 <body>
 <div class="footer">
         <div class="top-footer">

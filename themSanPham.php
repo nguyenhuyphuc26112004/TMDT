@@ -1,61 +1,60 @@
 <?php
-
 session_start();
+
+// 1. Kiểm tra đăng nhập
 if (!isset($_SESSION['idNguoiDung'])) {
     header('Location: dangNhap.php');
-} else {
-    require('php/client/cart.php');
-    /*
-        Logic thêm sản phẩm vào giỏ hàng
+    exit(); // Luôn dùng exit sau header redirect
+}
 
-    ( có giỏ hàng <-> có ct giỏ hànghàng)
+require('php/client/cart.php');
 
-    1 . ktra người dùng đã có giỏ hang hay chua
+// 2. Tiếp nhận dữ liệu từ Form
+$idNguoiDung = $_SESSION['idNguoiDung'];
+$idSanPham   = $_POST['idSanPham'];
+$giaSanPham  = $_POST['giaSanPham'];
+$soLuong     = (int)$_POST['soLuong'];
+$action      = $_POST['action'] ?? 'add'; // Mặc định là 'add' nếu không có (đề phòng)
 
-    -> chưa -> thực hiện  tạo mới giỏ hàng và tạo mới ct giỏ hàng
-    -> có rồi :
-        -> Ktra người dùng đã thêm sp này vào hay chưa
-                -> thêm rồi : <-> có bản ghi trùng ( id cart và id product này ) trong  data table ct_gio_hang 
-                    -> thực hiện tăng so_luong của id ct_gio_hang này lên 1
-                -> chưa thêm : 
-                    -> thực hiện thêm <-> tạo mới 1 bản ghi ct_gio_hang có ( id cart và id product này ) và sp_luong = 1
-*/
-    $idNguoiDung = $_SESSION['idNguoiDung'];
-    $idSanPham =  $_POST['idSanPham'];
-    $giaSanPham = $_POST['giaSanPham'];
-    $soLuong = $_POST['soLuong']; // Capture quantity from the form
+// 3. Xử lý logic Giỏ hàng
+$gioHang = checkCart($con, $idNguoiDung); // kiểm tra người dùng có giỏ hàng hay ch
 
-
-    $gioHang = checkCart($con, $idNguoiDung);
-    if (is_array($gioHang) && !empty($gioHang)) {
-        echo ">>>>>>>>>>>> nguoi dung nay da co gio hang ";
-        $idGioHang = $gioHang['id'];
-        $soLuongInCart = $gioHang['so_luong_sp'];
-        $cTGioHang = checkCartAndProduct($con, $idGioHang, $idSanPham);
+if (is_array($gioHang) && !empty($gioHang)) {
+    // TRƯỜNG HỢP: Đã có giỏ hàng
+    $idGioHang = $gioHang['id'];
+    $soLuongInCart = $gioHang['so_luong_sp'];
     
-        // Check if the product is already in the cart
-        if (is_array($cTGioHang) && !empty($cTGioHang)) {
-            echo "<br>" . ">>>>>>>>>>>> Người dùng đã thêm sp này vào ít nhất 1 lần rồi";
-            $currentQuantity = $cTGioHang['so_luong'];
-            $idCTGioHang = $cTGioHang['id'];
-    
-            // Update the quantity in the cart
-            $currentQuantity += $soLuong;  // Use the submitted quantity
-            $kq = updateCartDetail($con, $idCTGioHang, $currentQuantity);
-        } else {
-            echo "<br>" . ">>>>>>>>>>>> Người dùng chưa thêm sp này vào giỏ hàng";
-            insertCartDetail($con, $idGioHang, $idSanPham, $soLuong, $giaSanPham); // Use the submitted quantity
-            $soLuongInCart += $soLuong; // Update total quantity in cart
-        }
-        $kqud = updateCart($con, $idGioHang, $soLuongInCart);
+    $cTGioHang = checkCartAndProduct($con, $idGioHang, $idSanPham);
+    // kiểm tra sản phẩm đã có trong giỏ hàng hay ch
+    if (is_array($cTGioHang) && !empty($cTGioHang)) {
+        // Sản phẩm đã tồn tại -> Cập nhật số lượng (+ thêm số lượng mới chọn)
+        $currentQuantity = $cTGioHang['so_luong'] + $soLuong;
+        $idCTGioHang = $cTGioHang['id'];
+        updateCartDetail($con, $idCTGioHang, $currentQuantity);
     } else {
-        echo ">>>>>>>>>>>> nguoi dung nay chưa co gio hang ";
-        $idGioHang = insertCart($con, $idNguoiDung, $soLuong); // Start with the submitted quantity
-        if (is_numeric($idGioHang)) {
-            insertCartDetail($con, $idGioHang, $idSanPham, $soLuong, $giaSanPham); // Use the submitted quantity
-        } else {
-            echo "Loi khong tao moi dc gio hang";
-        }
-    } 
+        // Sản phẩm mới -> Thêm dòng mới vào chi tiết
+        insertCartDetail($con, $idGioHang, $idSanPham, $soLuong, $giaSanPham);
+        $soLuongInCart += 1; // Tăng số lượng loại sản phẩm trong giỏ
+    }
+    // Cập nhật lại tổng số lượng mặt hàng trong giỏ chính
+    updateCart($con, $idGioHang, $soLuongInCart);
+
+} else {
+    // TRƯỜNG HỢP: Chưa có giỏ hàng (Tạo mới hoàn toàn)
+    $idGioHang = insertCart($con, $idNguoiDung, 1); // Tạo giỏ với 1 loại SP đầu tiên
+    if (is_numeric($idGioHang)) {
+        insertCartDetail($con, $idGioHang, $idSanPham, $soLuong, $giaSanPham); // thêm 1 bàn ghi ct giỏ hàng
+    } else {
+        die("Lỗi: Không thể tạo mới giỏ hàng.");
+    }
+}
+
+// 4. Điều hướng dựa trên nút bấm (UX)
+if ($action === 'buy') {
+    // Nếu bấm "Đặt hàng" -> Nhảy thẳng đến trang thanh toán
+    header("Location: trangDatHang.php?id=$idGioHang");
+} else {
+    // Nếu bấm "Thêm vào giỏ hàng" -> Quay về xem giỏ hàng
     header('Location: gioHang.php');
 }
+exit();

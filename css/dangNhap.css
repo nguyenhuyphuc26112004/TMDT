@@ -1,60 +1,269 @@
-
-.box {
-    margin: 50px auto;
-    width: 400px;
-    border-radius: 10px;
-    padding: 15px 30px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #CCD0D5;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-form {
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===== CARD ===== */
+.login {
+    width: 800px;
+    height: 420px;
+    background: #fff;
+    border-radius: 12px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== LEFT ===== */
+.left-login {
+    width: 40%;
+    background: linear-gradient(135deg, #1dd3c6, #48bfee);
+    color: #fff;
     display: flex;
     flex-direction: column;
-    border-radius: 15px solid #000;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+    border-radius: 12px 35% 35% 12px;
 }
 
-h2 {
-    font-size: 36px;
+.left-login h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.left-login p {
     margin-bottom: 20px;
-    color: #2F4F4F;
+    font-size: 14px;
 }
-.dau_vao {
-    border-bottom: 2px solid #ccc;
-    margin: 15px 0;
-}
-.dau_vao label{
-    font-size: 22px;
-}
-.dau_vao input {
-    width: 100%;
-    height: 40px;
-    color: #000;
+
+.left-login button {
+    padding: 10px 40px;
     background: transparent;
-    border: none;
-    outline: none;
+    border: 2px solid #fff;
+    color: #fff;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
     font-size: 16px;
 }
-.register a {
-    color: blue;
-    text-decoration: none;
+
+.left-login button:hover {
+    background: #fff;
+    color: #48bfee;
 }
-.btn {
+
+/* ===== RIGHT ===== */
+.right-login {
+    width: 60%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     text-align: center;
 }
-button {
-    background-color: #87CEFA;
-    padding: 10px 50px;
+
+.right-login h2 {
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.right-login form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== INPUT ===== */
+.input-box {
+    position: relative;
+    margin-bottom: 12px; /* đủ chỗ cho error */
+}
+
+.input-box input {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
     border: none;
+    border-radius: 8px;
+    background: #f2f2f2;
+    font-size: 14px;
+}
+
+.input-box i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+    transition: top .2s ease;
+}
+
+.input-box input:focus {
+    outline: 1px solid #1dd3c6;
+}
+
+/* ===== ERROR (🔥 FIX CHÍNH) ===== */
+.error {
+    display: none;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #e74c3c;
+    text-align: left;
+    padding-left: 15px;
+}
+
+.input-box.has-error .error {
+    display: block;
+}
+
+/* viền đỏ */
+
+.input-box.has-error input {
+    outline: 1px solid red;
+}
+
+/* icon nhích lên để tránh đè error */
+.input-box.has-error i {
+    top: 33.3%;
+    color: red;
+}
+/* ===== TEXT ===== */
+.right-login p {
+    font-size: 13px;
+    color: #2575fc;
     cursor: pointer;
-    border-radius: 5px;
-    margin-top: 10px;
-    font-size: 18px;
-    color: #2F4F4F;
+    margin-bottom: 20px;
+    transition: text-decoration 0.2s, color 0.2s;
 }
 
-.register {
-    text-align: center;
-    color: #010101;
+.right-login p:hover {
+    text-decoration: underline;
 }
 
+/* ===== BUTTON ===== */
+.right-login button {
+    margin: 0 auto;
+    width: 75%;
+    padding: 12px;
+    background: linear-gradient(to right, #094b46, #48bfee);
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.right-login button:hover {
+    opacity: 0.9;
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #999;
+    font-size: 16px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+}
+
+.divider::before {
+    background: linear-gradient(to right, transparent, #ddd);
+}
+
+.divider::after {
+    background: linear-gradient(to left, transparent, #ddd);
+}
+
+.divider span {
+    padding: 0 12px;
+    white-space: nowrap;
+}
+
+/* ===== ICON ===== */
+.list-icon {
+    display: flex;
+    justify-content: center;
+}
+
+.icon {
+    display: flex;
+    gap: 15px;
+}
+
+.icon i {
+    width: 45px;
+    height: 45px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #555;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.icon i.fa-facebook { color: #1877f2; }
+.icon i.fa-google { color: #5f6368; }
+.icon i.fa-instagram { color: #e1306c; }
+
+.icon i:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.icon i.fa-facebook:hover {
+    background: #1877f2;
+    color: #fff;
+    border-color: transparent;
+}
+
+.icon i.fa-google:hover {
+    background: #c9c9c9;
+    border-color: #dadce0;
+    color: #202124;
+}
+
+.icon i.fa-instagram:hover {
+    background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+    color: #fff;
+    border-color: transparent;
+}
+
+/* ===== PAGE ANIMATION ===== */
+.page {
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

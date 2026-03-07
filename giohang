@@ -1,0 +1,167 @@
+<?php
+require('php/checkSession.php');
+checkSessionClient();
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <title>Giỏ hàng của bạn</title>
+    <style>
+        /* Giữ nguyên phần CSS của bạn */
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+        .quanLyDH { margin: 50px auto; max-width: 1100px; min-height: 80vh; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .quanLyDH table { border-collapse: collapse; width: 100%; }
+        td, th { border: 1px solid #eeeeee; text-align: left; padding: 15px; }
+        th { background-color: #f2f2f2; text-transform: uppercase; font-size: 14px; }
+        .title-cart { margin-bottom: 20px; border-bottom: 2px solid #28c361; display: inline-block; }
+        .btn-delete { padding: 8px 12px; border-radius: 5px; background-color: #DC3640; color: white; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-delete:hover { opacity: 0.8; }
+        .pay { text-decoration: none; padding: 12px 25px; background-color: #28c361; color: #fff; border-radius: 5px; font-weight: bold; display: inline-block; }
+        .total-price { color: red; font-weight: bold; font-size: 20px; }
+        .empty-cart-container { text-align: center; padding: 100px 20px; }
+    </style>
+</head>
+
+<body>
+    <?php 
+    require('layout/header.php'); 
+    require('php/client/cart.php');
+    
+    $idNguoiDung = $_SESSION['idNguoiDung'];
+    $gioHang = checkCart($con, $idNguoiDung);
+    ?>
+
+    <div id="cart-content">
+        <?php if ($gioHang == null): ?>
+            <div class="empty-cart-container">
+                <i class="fa-solid fa-cart-shopping" style="font-size: 80px; color: #ddd; margin-bottom: 20px;"></i>
+                <h1 style="color: #999;">Giỏ hàng của bạn đang trống</h1>
+                <a href="index.php" style="text-decoration:none; background:#151534; color:white; padding:12px 25px; border-radius:5px;">Quay lại cửa hàng</a>
+            </div>
+        <?php else: ?>
+            <div class="quanLyDH">
+                <div class="title-cart">
+                    <h1><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng của bạn</h1>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ảnh sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th style="text-align: center;">Số lượng</th>
+                            <th>Thành tiền</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-table-body">
+                        <tr><td colspan="5" style="text-align: center;">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" style="text-align: right;"><h3>Tổng đơn hàng:</h3></td>
+                            <td colspan="2" style="text-align: center;">
+                                <span id="total-price-display" class="total-price">0 VNĐ</span>
+                            </td>
+                            <td>
+                                <a href="trangDatHang.php?id=<?php echo $gioHang['id']; ?>" class="pay">
+                                    Thanh toán <i class="fa-solid fa-chevron-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <script>
+    // Biến lưu trữ ID giỏ hàng từ PHP để JS sử dụng
+    const currentCartId = <?php echo $gioHang ? $gioHang['id'] : 'null'; ?>;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        if (currentCartId) loadCart();
+    });
+
+    function loadCart() {
+        fetch('api_get_cart.php')
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    renderCart(result.data, result.tongCong);
+                } else {
+                    document.getElementById('cart-table-body').innerHTML = 
+                        `<tr><td colspan="5" style="text-align: center; color: red;">${result.message}</td></tr>`;
+                }
+            })
+            .catch(err => console.error("Lỗi tải giỏ hàng:", err));
+    }
+
+    function renderCart(items, total) {
+        const tableBody = document.getElementById('cart-table-body');
+        const totalDisplay = document.getElementById('total-price-display');
+        
+        if (items.length === 0) {
+            // Nếu xóa hết sản phẩm, hiển thị giao diện trống
+            document.getElementById('cart-content').innerHTML = `
+                <div class="empty-cart-container">
+                    <i class="fa-solid fa-cart-shopping" style="font-size: 80px; color: #ddd; margin-bottom: 20px;"></i>
+                    <h1 style="color: #999;">Giỏ hàng của bạn đang trống</h1>
+                    <a href="index.php" style="text-decoration:none; background:#151534; color:white; padding:12px 25px; border-radius:5px;">Quay lại cửa hàng</a>
+                </div>`;
+            return;
+        }
+
+        let html = "";
+        items.forEach(item => {
+            html += `
+                <tr>
+                    <td><img src="admin/img/${item.anh}" width="70px" height="70px" style="object-fit:cover; border-radius:5px;"></td>
+                    <td>
+                        <a style="color:#151534; font-weight:500; text-decoration:none;" href="xemChiTietSP.php?id=${item.id_san_pham}">
+                            ${item.ten}
+                        </a>
+                    </td>
+                    <td style="text-align:center; font-weight:bold;">${item.so_luong}</td>
+                    <td style="color:#333;">${Number(item.thanh_tien).toLocaleString('vi-VN')} VNĐ</td>
+                    <td>
+                        <button onclick="removeItem(${item.id_san_pham})" class="btn-delete">
+                            <i class="fa-solid fa-trash-can"></i> Xóa
+                        </button>
+                    </td>
+                </tr>`;
+        });
+        
+        tableBody.innerHTML = html;
+        totalDisplay.innerText = Number(total).toLocaleString('vi-VN') + " VNĐ";
+    }
+
+    function removeItem(productId) {
+        if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+
+        fetch('api_delete_item.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idsp: productId, idgh: currentCartId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadCart(); // Tải lại bảng dữ liệu ngầm
+            } else {
+                alert("Lỗi: " + data.message);
+            }
+        })
+        .catch(err => alert("Lỗi kết nối server!"));
+    }
+    </script>
+
+    <?php require('layout/footer.php'); ?>
+</body>
+</html>

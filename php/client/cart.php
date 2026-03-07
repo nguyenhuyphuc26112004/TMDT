@@ -1,267 +1,165 @@
 <?php
-// echo "hello from cart.php <br>";
 
 require($_SERVER['DOCUMENT_ROOT'] . '/TMDT/php/connectMysql.php');
-// require('../connectMysql.php');
+
+/**
+ * NHÓM 1: KIỂM TRA (CHECK)
+ */
+
+// 1. Kiểm tra giỏ hàng của người dùng đã tồn tại chưa
 function checkCart($con, $idNguoiDung)
 {
-    // Câu lệnh SQL
     $sql = "SELECT * FROM gio_hang WHERE id_nguoi_dung = ?";
-    // Chuẩn bị câu lệnh
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // Gán tham số
         $stmt->bind_param("i", $idNguoiDung);
-
-        // Thực thi
         $stmt->execute();
-
-        // Lấy kết quả
         $result = $stmt->get_result();
-
-        // Trả về bản ghi đầu tiên nếu có
-        return $result->fetch_assoc(); // Trả về mảng kết hợp
+        return $result->fetch_assoc(); 
     }
-
-    // Trả về null nếu có lỗi
     return null;
 }
 
+// 2. Kiểm tra một sản phẩm cụ thể đã có trong giỏ hàng chưa
 function checkCartAndProduct($con, $idGioHang, $idSanPham)
 {
-    // Câu lệnh SQL
-    $sql = "SELECT * FROM ct_gio_hang WHERE id_gio_hang = ? And id_san_pham = ?";
-
-
-    // Chuẩn bị câu lệnh
+    $sql = "SELECT * FROM ct_gio_hang WHERE id_gio_hang = ? AND id_san_pham = ?";
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // Gán tham số
         $stmt->bind_param("ii", $idGioHang, $idSanPham);
-
-        // Thực thi
         $stmt->execute();
-
-        // Lấy kết quả
         $result = $stmt->get_result();
-
-        // Trả về bản ghi đầu tiên nếu có
-        return $result->fetch_assoc(); // Trả về mảng kết hợp
+        return $result->fetch_assoc();
     }
-
-    // Trả về null nếu có lỗi
     return null;
 }
 
-// CART DETAIL
+/**
+ * NHÓM 2: CHI TIẾT GIỎ HÀNG (CART DETAIL)
+ */
+
+// 3. Cập nhật số lượng cho một dòng sản phẩm đã có sẵn
 function updateCartDetail($con, $idCTGioHang, $soLuong)
 {
-    // Câu lệnh SQL
-    $sql = "UPDATE ct_gio_hang SET so_luong = ? WHERE id = ? ";
-
-
-    // Chuẩn bị câu lệnh
+    $sql = "UPDATE ct_gio_hang SET so_luong = ? WHERE id = ?";
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // Gán tham số
         $stmt->bind_param("ii", $soLuong, $idCTGioHang);
-
         if ($stmt->execute()) {
-            return "đã cập nhật CT_gio_hang vào database";
-        } else {
-            return "Lỗi không cập nhật được CT_gio_hang vào database";
+            return "Đã cập nhật số lượng trong chi tiết giỏ hàng";
         }
-    } else {
-        return "lỗi câu lệnh sql";
+        return "Lỗi: Không thể cập nhật chi tiết giỏ hàng";
     }
+    return "Lỗi câu lệnh SQL";
 }
 
+// 4. Thêm một sản phẩm mới vào bảng chi tiết giỏ hàng
 function insertCartDetail($con, $idGioHang, $idSanPham, $soLuong, $gia)
 {
-    // Câu lệnh SQL
-    $sql = "INSERT INTO ct_gio_hang (id_gio_hang, id_san_pham, so_luong, gia) VALUES (?, ?, ?, ?);";
-
-
-    // Chuẩn bị câu lệnh
+    $sql = "INSERT INTO ct_gio_hang (id_gio_hang, id_san_pham, so_luong, gia) VALUES (?, ?, ?, ?)";
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // Gán tham số
         $stmt->bind_param("iiii", $idGioHang, $idSanPham, $soLuong, $gia);
-
         if ($stmt->execute()) {
-            return "đã thêmthêm CT_gio_hang vào database";
-        } else {
-            return "Lỗi không thêmthêm được CT_gio_hang vào database";
+            return "Đã thêm sản phẩm vào chi tiết giỏ hàng";
         }
-    } else {
-        return "lỗi câu lệnh sql";
+        return "Lỗi: Không thể thêm sản phẩm vào chi tiết giỏ hàng";
     }
+    return "Lỗi câu lệnh SQL";
 }
 
-
+// 5. Lấy danh sách tất cả sản phẩm trong một giỏ hàng
 function getCartDetailByCart($con, $idGioHang)
 {
     $sql = "SELECT * FROM ct_gio_hang WHERE id_gio_hang = ?";
-    // Mảng lưu kết quả
     $cartDetails = [];
-
-    // Chuẩn bị câu lệnh
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // gán các tham số
         $stmt->bind_param("i", $idGioHang);
-        // Thực thi câu lệnh SQL
         $stmt->execute();
-
-        // Lấy kết quả
         $result = $stmt->get_result();
-
-        // Hứng dữ liệu từ câu truy vấn SQL
-        while ($cartDetail = $result->fetch_assoc()) {
-            // Thêm mỗi người dùng vào mảng
-            $cartDetails[] = $cartDetail;
+        while ($row = $result->fetch_assoc()) {
+            $cartDetails[] = $row;
         }
-
-        // Trả về mảng chứa tất cả người dùng
         return $cartDetails;
     }
-
-    // Trả về mảng rỗng nếu có lỗi
     return [];
 }
 
+// 6. Xóa tất cả sản phẩm trong chi tiết giỏ hàng theo ID giỏ hàng
 function deleteProductInCartDetail($con, $idGioHang)
 {
-    $sql = "DELETE FROM ct_gio_hang WHERE id_gio_hang = ?;";
-    // Chuẩn bị câu lệnh
+    $sql = "DELETE FROM ct_gio_hang WHERE id_gio_hang = ?";
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-        // gán các tham số
         $stmt->bind_param("i", $idGioHang);
-
         if ($stmt->execute()) {
-            return "đã xóa thành con các sp trong ct gio hang";
-        } else {
-            return "Lỗi không thể xóa các sp trong ct gio hang ";
+            return "Đã xóa thành công các sản phẩm trong chi tiết giỏ hàng";
         }
-    } else {
-        return "lỗi câu lệnh sql";
+        return "Lỗi: Không thể xóa các sản phẩm";
     }
+    return "Lỗi câu lệnh SQL";
 }
 
-// CART
+/**
+ * NHÓM 3: GIỎ HÀNG TỔNG (CART)
+ */
+
+// 7. Cập nhật tổng số lượng loại sản phẩm trong giỏ hàng chính
 function updateCart($con, $idGioHang, $soLuong)
 {
-    // Câu lệnh SQL 
-    $sql = "UPDATE gio_hang SET so_luong_sp = ? WHERE id = ? ";
-
-
-    // Chuẩn bị câu lệnh
+    $sql = "UPDATE gio_hang SET so_luong_sp = ? WHERE id = ?";
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // Gán tham số
         $stmt->bind_param("ii", $soLuong, $idGioHang);
-
         if ($stmt->execute()) {
-            return "đã cập nhật gio_hang vào database";
-        } else {
-            return "Lỗi không cập nhật được gio_hang vào database";
+            return "Đã cập nhật giỏ hàng chính";
         }
-    } else {
-        return "lỗi câu lệnh sql";
+        return "Lỗi: Không thể cập nhật giỏ hàng chính";
     }
+    return "Lỗi câu lệnh SQL";
 }
 
+// 8. Tạo mới một giỏ hàng cho người dùng
 function insertCart($con, $idNguoiDung, $soLuong)
 {
-    // Câu lệnh SQL
-    $sql = "INSERT INTO gio_hang (id_nguoi_dung, so_luong_sp) VALUES (?, ?);";
-
-
-    // Chuẩn bị câu lệnh
+    $sql = "INSERT INTO gio_hang (id_nguoi_dung, so_luong_sp) VALUES (?, ?)";
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // Gán tham số
         $stmt->bind_param("ii", $idNguoiDung, $soLuong);
-
         if ($stmt->execute()) {
-            //đã thêm gio_hang vào database
-            return $con->insert_id; // tra ve id cua gio hang vua tao moi
-        } else {
-            return "Lỗi không thêm được gio_hang vào database";
+            return $con->insert_id; // Trả về ID của giỏ hàng vừa tạo
         }
-    } else {
-        return "lỗi câu lệnh sql";
+        return "Lỗi: Không thể tạo giỏ hàng mới";
     }
+    return "Lỗi câu lệnh SQL";
 }
 
+// 9. Reset số lượng sản phẩm trong giỏ hàng về 0 theo ID người dùng
 function updateProductInCart($con, $idNguoiDung)
 {
-    $sql = "UPDATE gio_hang SET so_luong_sp = 0 WHERE id_nguoi_dung = ?;";
-    // Chuẩn bị câu lệnh
+    $sql = "UPDATE gio_hang SET so_luong_sp = 0 WHERE id_nguoi_dung = ?";
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-        // Gán tham số
         $stmt->bind_param("i", $idNguoiDung);
-
         if ($stmt->execute()) {
-            return "đã update thành con các sp trong gio hang";
-        } else {
-            return "Lỗi không thể update các sp trong gio hang ";
+            return "Đã reset số lượng sản phẩm trong giỏ hàng về 0";
         }
-    } else {
-        return "lỗi câu lệnh sql";
+        return "Lỗi: Không thể cập nhật giỏ hàng";
     }
+    return "Lỗi câu lệnh SQL";
 }
 
+// 10. Lấy thông tin giỏ hàng tổng dựa trên ID giỏ hàng
 function getCartById($con, $id)
 {
     $sql = "SELECT * FROM gio_hang WHERE id = ?";
-    // Mảng lưu kết quả
-    $cart = [];
-
-    // Chuẩn bị câu lệnh
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // gán các tham số
         $stmt->bind_param("i", $id);
-        // Thực thi câu lệnh SQL
         $stmt->execute();
-
-        // Lấy kết quả
         $result = $stmt->get_result();
-
         return $result->fetch_assoc();
     }
-
-    // Trả về mảng rỗng nếu có lỗi
     return [];
 }

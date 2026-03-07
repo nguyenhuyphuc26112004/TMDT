@@ -131,14 +131,13 @@
                 </div>
                 <div class="btn">
                     <div class="themGioHang">
-                        <button type="submit">Thêm vào giỏ hàng</button>
+                        <button type="submit" name="action" value="add">Thêm vào giỏ hàng</button>
                     </div>
                     <div class="datHang">
-                        <button type ="submit">Đặt hàng</button>
+                        <button type ="submit" name="action" value="buy">Đặt hàng</button>
                     </div>
                 </div> 
             </form>
-        
         </div>
     </div>
     <script src="./js/xemChiTietSP.js"></script>

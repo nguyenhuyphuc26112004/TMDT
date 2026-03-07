@@ -29,7 +29,6 @@ checkSession(2);
 
     <!-- header -->
     <?php
-    require('layout/header.php');
     require('../php/admin/saveObject.php');
     // Kiểm tra nếu người dùng nhấn nút "Dăng ký"
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -117,8 +116,6 @@ checkSession(2);
                 <input type="password" id="nhapLaiMatKhau" name="nhapLaiMatKhau" placeholder="Nhập lại mật khẩu">
             </div>
             <span class="error" id="nhapLaiMatKhauError">Nhập lại mật Khẩu sai </span>
-
-
 
             <div class="btn-dangKy">
                 <button type="submit">Đăng ký</button>

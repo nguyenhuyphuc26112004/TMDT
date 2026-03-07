@@ -1,5 +1,4 @@
 <?php
-// echo "hello form checkLogin.php";
 require($_SERVER['DOCUMENT_ROOT'] . '/TMDT/php/connectMysql.php');
 
 // ktra login của trang admin  -> chỉ có admin mới vào dcdc
@@ -42,15 +41,10 @@ function checkLoginAdmin($con, $username, $password)
 function checkLogin($con, $username, $password)
 {
     $sql = "SELECT * FROM nguoi_dung WHERE ten_dang_nhap = ? AND mat_khau = ?";
-
-    // Chuẩn bị câu lệnh SQL
     $stmt = $con->prepare($sql);
-
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
         $stmt->bind_param("ss", $username, $password);
         $stmt->execute();
-
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
             // Lấy thông tin người dùng

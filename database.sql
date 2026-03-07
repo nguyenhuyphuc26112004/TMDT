@@ -81,3 +81,9 @@ CREATE TABLE `ct_don_hang` (
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `vai_tro` VALUES (1,'USER'),(2,'ADMIN');
+
+ALTER TABLE `don_hang` 
+ADD COLUMN `ngay_dat` DATETIME DEFAULT CURRENT_TIMESTAMP;
+ADD COLUMN `pt_thanh_toan` VARCHAR(255) DEFAULT NULL;
+ADD COLUMN `trang_thai_thanh_toan` VARCHAR(50) DEFAULT 'Chưa thanh toán' AFTER `trang_thai`,
+ADD COLUMN `ma_chuyen_khoan` VARCHAR(100) DEFAULT NULL AFTER `trang_thai_thanh_toan`;

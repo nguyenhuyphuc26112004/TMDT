@@ -1,3 +1,9 @@
+<?php
+// BẮT BUỘC: session_start phải nằm ở dòng đầu tiên của file
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +24,9 @@
             <div class="right-info-header">
                 <div class="right-info">
                     <i class="fa-solid fa-circle-user"></i>
-                    <p>Tài khoản</p>
+                    <p>
+                        <?php echo isset($_SESSION['tenDangNhap']) ? "Chào, " . htmlspecialchars($_SESSION['tenDangNhap']) : "Tài khoản"; ?>
+                    </p>
                     <div class="log">
                         <?php
                             if (session_status() == PHP_SESSION_NONE) {
@@ -42,10 +50,7 @@
                         ?>                      
                     </div>
                 </div>
-                <div class="account">
-                    <i class="fa-solid fa-arrows-rotate"></i>
-                    <p>Sản phẩm</p>
-                </div>
+                
                 <div class="account">
                     <i class="fa-solid fa-location-dot"></i>
                     <p>Hệ thống của hàng</p>
@@ -56,30 +61,18 @@
             <div>
                 <img src="./anh/logo.jpg" alt="">
             </div>
-            <form action="search.php" method="GET" class="search">
-                <div class="search">
-                    <input type="text" name ="query" placeholder="Tìm kiếm sản phẩm ...">
-                    <div class="grass">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </div>
-                </div>
+
+            <form action="search.php" method="GET" class="search-box">
+                <input type="text" name="query" placeholder="Bạn muốn tìm hoa quả gì hôm nay?">
+                <button type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
             </form>
-            <div class="phone">
-                <div>
-                    <i class="fa-solid fa-phone"></i>
-                </div>
-                <div class="info-phone">
-                    <p>Gọi đặt hàng</p>
-                    <p class="sdt">0368334112</p>
-                </div>
-            </div>
-            <div class="phone">
-                <div>
-                    <i class="fa-solid fa-phone"></i>
-                </div>
-                <div class="info-phone">
-                    <p>Gọi tư vấn</p>
-                    <p class="sdt">0368334112</p>
+            <div class="header-contact">
+                <i class="fa-solid fa-headset"></i>
+                <div class="contact-txt">
+                    <p>Hỗ trợ tận tâm</p>
+                    <span>0368.334.112</span>
                 </div>
             </div>
         </div>

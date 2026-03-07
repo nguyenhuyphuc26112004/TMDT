@@ -1,50 +1,7 @@
 <?php
-// echo "hello from getAllObjectByCondition.php <br>";
 
 require($_SERVER['DOCUMENT_ROOT'] . '/TMDT/php/connectMysql.php');
-// require('../connectMysql.php');
 
-
-
-// $con thuộc file connectMysql.php
-// hàm
-function hello()
-{
-    return "hello from getAllObjectByCondition.php";
-}
-
-// function getObjectByCondition($con, $tableName, $loai)
-// {
-//     // Câu lệnh SQL
-//     $sql = "SELECT * FROM $tableName WHERE loai = ? AND trang_thai = 1 ";
-
-//     // Mảng lưu kết quả
-//     $prds = [];
-
-//     // Chuẩn bị câu lệnh
-//     $stmt = $con->prepare($sql);
-
-//     // Kiểm tra câu lệnh đã sẵn sàng chưa
-//     if ($stmt) {
-
-//         // gán các tham số vào câu lệnh
-//         $stmt->bind_param("s", $loai);
-
-//         // Thực thi câu lệnh SQL
-//         $stmt->execute();
-
-//         // Lấy kết quả
-//         $result = $stmt->get_result();
-
-//         // Hứng dữ liệu từ câu truy vấn SQL
-//         while ($prd = $result->fetch_assoc()) {
-//             // Thêm mỗi người dùng vào mảng
-//             $prds[] = $prd;
-//         }
-//         return $prds;
-//     }
-//     return [];
-// }
 function getTotalProducts($con, $table, $loai) {
     $sql = "SELECT COUNT(*) AS total FROM $table WHERE loai = ?";
     $stmt = $con->prepare($sql);
@@ -123,36 +80,53 @@ function getOrderDetailByOrder($con, $idDonHang)
     return [];
 }
 
-function getOrderByUser($con, $idNguoiDung)
+function getOrderByUserPaged($con, $idNguoiDung, $offset = 0, $limit = 10)
 {
-    $sql = "SELECT * FROM don_hang WHERE id_nguoi_dung = ?";
-    // Mảng lưu kết quả
+    $sql = "SELECT * FROM don_hang WHERE id_nguoi_dung = ? ORDER BY ngay_dat DESC LIMIT ?, ?";
     $orders = [];
-
-    // Chuẩn bị câu lệnh
     $stmt = $con->prepare($sql);
 
-    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
-
-        // gán các tham số
-        $stmt->bind_param("i", $idNguoiDung);
-        // Thực thi câu lệnh SQL
+        $stmt->bind_param("iii", $idNguoiDung, $offset, $limit);
         $stmt->execute();
-
-        // Lấy kết quả
         $result = $stmt->get_result();
 
-        // Hứng dữ liệu từ câu truy vấn SQL
         while ($order = $result->fetch_assoc()) {
-
             $orders[] = $order;
         }
-
-
         return $orders;
     }
+    return [];
+}
 
-    // Trả về mảng rỗng nếu có lỗi
+function countTotalOrdersByUser($con, $idNguoiDung) {
+    $sql = "SELECT COUNT(*) AS total FROM don_hang WHERE id_nguoi_dung = ?";
+    $stmt = $con->prepare($sql);
+    
+    if ($stmt) {
+        $stmt->bind_param("i", $idNguoiDung);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['total'];
+    }
+    return 0;
+}
+
+// Giữ lại hàm cũ nếu bạn vẫn cần dùng ở nơi khác không có phân trang
+function getOrderByUser($con, $idNguoiDung)
+{
+    $sql = "SELECT * FROM don_hang WHERE id_nguoi_dung = ? ORDER BY ngay_dat DESC";
+    $orders = [];
+    $stmt = $con->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("i", $idNguoiDung);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($order = $result->fetch_assoc()) {
+            $orders[] = $order;
+        }
+        return $orders;
+    }
     return [];
 }
