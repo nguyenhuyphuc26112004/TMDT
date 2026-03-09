@@ -7,11 +7,6 @@ require('php/client/getObjectByCondition.php');
 $tenDangNhap = $matKhau = "";
 $errorUsername = $errorPassword = $errorLogin = "";
 
-// Kiểm tra nếu có tham số 'loi' trên URL (từ lần redirect trước)
-if (isset($_GET['loi'])) {
-    $errorLogin = "Tên đăng nhập hoặc mật khẩu không chính xác!";
-}
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $tenDangNhap = trim($_POST['tenDangNhap']);
     $matKhau = trim($_POST['matKhau']);

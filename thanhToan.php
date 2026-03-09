@@ -15,7 +15,6 @@ $address     = mysqli_real_escape_string($con, $_POST['address']);
 $tongTien    = (float)$_POST['tongTien'];
 $trangThai   = 'Đang chờ duyệt';
 
-// Xử lý logic Phương thức thanh toán & Mã giao dịch
 $method = isset($_POST['payment_method']) ? $_POST['payment_method'] : 'COD';
 $ma_ck  = isset($_POST['ma_chuyen_khoan']) ? mysqli_real_escape_string($con, $_POST['ma_chuyen_khoan']) : null;
 
@@ -52,7 +51,6 @@ mysqli_begin_transaction($con);
 
 try {
     // A. Tạo đơn hàng tổng quát
-    // Lưu ý: Cần đảm bảo hàm insertOrder hỗ trợ các cột mới hoặc viết SQL trực tiếp ở đây
     $sql_dh = "INSERT INTO don_hang (id_nguoi_dung, tong_tien, dia_chi, email, sdt, ten, trang_thai, pt_thanh_toan, trang_thai_thanh_toan, ma_chuyen_khoan, ngay_dat) 
                VALUES ('$idNguoiDung', '$tongTien', '$address', '$email', '$sdt', '$name', '$trangThai', '$pt_thanh_toan', '$trang_thai_tt', '$ma_ck', NOW())";
     

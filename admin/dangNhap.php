@@ -3,7 +3,9 @@ session_start();
 require('../php/checkLogin.php'); 
 
 // 1. Nếu đã đăng nhập và là admin, chuyển thẳng về trang quản lý
-if (isset($_SESSION['tenDangNhap']) && isset($_SESSION["vaiTro"]) && $_SESSION["vaiTro"] == 2) {
+if (isset($_SESSION['tenDangNhap']) && 
+    isset($_SESSION["vaiTro"]) && 
+    $_SESSION["vaiTro"] == 2) {
     header('Location: quanLySP.php');
     exit;
 }
@@ -17,16 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($tenDangNhap) && !empty($matKhau)) {
         
         // Gọi hàm checkLoginAdmin từ file checkLogin.php
-        if (checkLoginAdmin($con, $tenDangNhap, $matKhau)) {
+        $nguoiDung = checkLoginAdmin($con, $tenDangNhap, $matKhau);
             
-            // Lấy thông tin ID để lưu vào session
-            $sql = "SELECT id FROM nguoi_dung WHERE ten_dang_nhap = ? AND id_vai_tro = 2";
-            $stmt = $con->prepare($sql);
-            $stmt->bind_param("s", $tenDangNhap);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            if ($nguoiDung = $result->fetch_assoc()) {
+            if ($nguoiDung) {
                 $_SESSION["tenDangNhap"] = $tenDangNhap;
                 $_SESSION["idNguoiDung"] = $nguoiDung['id'];
                 $_SESSION["vaiTro"] = 2; // Gán vai trò Admin
@@ -41,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
     }
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

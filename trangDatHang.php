@@ -68,7 +68,7 @@
                 <h3>ĐƠN HÀNG CỦA BẠN</h3>
                 <?php
                     $tongTien = 0;
-                    foreach ($cTGioHang as $cTGH) {
+                    foreach ($cTGioHang as $cTGH) :
                         $tongTien += ($cTGH['so_luong'] * $cTGH['gia']);
                         $sp = getObjectById($con, 'san_pham', $cTGH['id_san_pham']);
                 ?>
@@ -79,7 +79,7 @@
                     </div>
                     <span><?php echo number_format($cTGH['so_luong'] * $cTGH['gia'], 0, ',', '.') ?>đ</span>
                 </div>
-                <?php } ?>
+                <?php ; ?>
 
                 <div class="tongCong">Tổng: <?php echo number_format($tongTien, 0, ',', '.') ?> VNĐ</div>
 
