@@ -140,6 +140,22 @@
             </form>
         </div>
     </div>
-    <script src="./js/xemChiTietSP.js"></script>
+    <script>
+        var amountElement = document.getElementById('amount');
+        var amount = parseInt(amountElement.value);
+        function render(amount) {
+            amountElement.value = amount;
+        }
+        function tang() {
+            amount++;
+            render(amount);
+        }
+        function giam() {
+            if (amount > 1) {
+            amount--;
+            }
+            render(amount);
+        }
+    </script>
 </body>
 </html>
