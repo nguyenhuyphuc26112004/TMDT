@@ -1,97 +1,143 @@
 <?php
-// ktra người dùng đăng nhập hay chưa
+session_start();
 require('php/checkSession.php');
 checkSessionClient();
-?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đổi mật khẩu</title>
-    <link rel="stylesheet" href="css/dangNhap.css">
-</head>
-<style>
-    .error {
-        color: red;
-        display: none;
-    }
-</style>
+if (isset($_POST['doimatkhau'])) {
+    $tenDangNhap = $_POST['tenDangNhap'];
+    $matKhauHT = $_POST['mat_khau'];
+    $matKhauMoi = $_POST['matKhaumoi'];
+    $nhapLaiMK = $_POST['nhapLaiMK'];
 
-<body>
-    <!-- header -->
-    <?php
-    require('layout/header.php'); 
-    require('php/client/getObjectByCondition.php');
-    if (isset($_POST['doimatkhau'])) { // Kiểm tra nếu form được submit với nút "doimatkhau"
-        $tenDangNhap = $_POST['tenDangNhap']; // Lấy tên đăng nhập từ form
-        $matKhau = $_POST['mat_khau'];       // Lấy mật khẩu hiện tại từ form
-        $matKhauMoi = $_POST['matKhaumoi']; // Lấy mật khẩu mới từ form
-
-        $nguoiDung = getUserByUserName($con, $tenDangNhap); // lấy ra người dùng có tenDangNhap trong database
-
-        if (!empty($nguoiDung)) { // tồn tại người dùng với $tenDangNhap
-            if ($nguoiDung['mat_khau'] == $matKhau) {
-                // mật khẩu người dung cung cấp là đúng 
-                $sql = "UPDATE nguoi_dung SET mat_khau = ?  Where ten_dang_nhap = ?";
-                // chuẩn bị câu lệnh
-                $stmt = $con->prepare($sql);
-                // gán các tham số vào câu lệnh
-                $stmt->bind_param("ss", $matKhauMoi, $tenDangNhap);
-
-                // thực thi câu lệnh 
-                if ($stmt->execute()) {
-                    // chuyển trang và đăng xuất khi đổi mật khẩu thành công
-                    session_unset(); // Xóa tất cả biến trong session
-                    session_destroy(); // Hủy phiên làm việc
-                    header('Location: dangNhap.php?doi-mat-khau-ok');
-                    exit;
-                }
-            }
-        }
-        // chuyển trang khi có lỗi
-        header('Location: doiMatKhau.php?loi-doi-mat-khau');
+    // 1. Kiểm tra mật khẩu mới và nhập lại có khớp nhau không
+    if ($matKhauMoi !== $nhapLaiMK) {
+        header('Location: doiMatKhau.php?loi=khong-khop');
         exit;
     }
+
+    require('php/client/getObjectByCondition.php');
+    $nguoiDung = getUserByUserName($con, $tenDangNhap);
+
+    if (!empty($nguoiDung)) {
+        // 2. So sánh trực tiếp (Không dùng hàm băm)
+        if ($nguoiDung['mat_khau'] === $matKhauHT) {
+            
+            $sql = "UPDATE nguoi_dung SET mat_khau = ? WHERE ten_dang_nhap = ?";
+            $stmt = $con->prepare($sql);
+            
+            // Lưu trực tiếp mật khẩu mới vào DB
+            $stmt->bind_param("ss", $matKhauMoi, $tenDangNhap);
+
+            if ($stmt->execute()) {
+                session_unset();
+                session_destroy();
+                header('Location: dangNhap.php?doi-mat-khau-ok');
+                exit;
+            }
+        }
+    }
+    // Chuyển trang nếu sai mật khẩu cũ hoặc sai tên đăng nhập
+    header('Location: doiMatKhau.php?loi=sai-thong-tin');
+    exit;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đổi mật khẩu</title>
+    <style>
+        /* CSS đồng bộ với form cũ của bạn */
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .box { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+        #formDoiMatKhau { background: #fff; padding: 30px; border-radius: 8px; width: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        .dau_vao { margin-bottom: 15px; }
+        .dau_vao p { margin: 0 0 5px 0; font-size: 14px; color: #555; font-weight: bold; }
+        .dau_vao input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .error { color: red; font-size: 12px; display: none; margin-top: 5px; }
+        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        .msg-error { color: red; text-align: center; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <?php
+        require('layout/header.php');
     ?>
-    <!-- end header -->
 
-    <div class="box">
-        <form id="formDoiMatKhau" action="doiMatKhau.php" method="post">
-            <h2>Đổi mật khẩu</h2>
-            <p style="color : red">
-                <?php echo isset($_GET['loi-doi-mat-khau']) ? "Lỗi đổi mật khẩu" : " " ?>
-            </p>
-            <div class="dau_vao">
-                <p>Tên đăng nhập</p>
-                <input type="text" id="tenDangNhap" placeholder="Nhập tên đăng nhập của bạn" name="tenDangNhap">
-            </div>
+<div class="box">
+    <form id="formDoiMatKhau" action="doiMatKhau.php" method="post">
+        <h2>Đổi mật khẩu</h2>
+
+        <div class="msg-error">
+            <?php 
+                if(isset($_GET['loi'])) {
+                    if($_GET['loi'] == 'khong-khop') echo "Mật khẩu nhập lại không khớp!";
+                    else echo "Tên đăng nhập hoặc mật khẩu cũ không đúng!";
+                }
+            ?>
+        </div>
+
+        <div class="dau_vao">
+            <p>Tên đăng nhập</p>
+            <input type="text" id="tenDangNhap" name="tenDangNhap" placeholder="Nhập tên đăng nhập">
             <span class="error" id="tenDangNhapError">Tên đăng nhập không được để trống</span>
+        </div>
 
+        <div class="dau_vao">
+            <p>Mật khẩu hiện tại</p>
+            <input type="password" id="matKhauHienTai" name="mat_khau" placeholder="Mật khẩu cũ">
+            <span class="error" id="matKhauHienTaiError">Mật khẩu hiện tại không được để trống</span>
+        </div>
 
-            <div class="dau_vao">
-                <p>Mật khẩu hiện tại</p>
-                <input type="text" id="matKhauHienTai" placeholder="Nhập mật khẩu hiện tại" name="mat_khau">
-            </div>
-            <span class="error" id="matKhauHienTaiError">Mật khẩu không được để trống</span>
+        <div class="dau_vao">
+            <p>Mật khẩu mới</p>
+            <input type="password" id="matKhauMoi" name="matKhaumoi" placeholder="Mật khẩu mới">
+            <span class="error" id="matKhauMoiError">Mật khẩu mới không được để trống</span>
+        </div>
 
+        <div class="dau_vao">
+            <p>Nhập lại mật khẩu mới</p>
+            <input type="password" id="nhapLaiMK" name="nhapLaiMK" placeholder="Xác nhận lại mật khẩu mới">
+            <span class="error" id="nhapLaiMKError">Vui lòng xác nhận lại mật khẩu mới</span>
+        </div>
 
-            <div class="dau_vao">
-                <p>Mật khẩu mới</p>
-                <input type="text" id="matKhauMoi" placeholder="Nhập mật khẩu mới" name="matKhaumoi">
-            </div>
-            <span class="error" id="matKhauMoiError">Mật khẩu không được để trống</span>
+        <button type="submit" name="doimatkhau">Đổi mật khẩu</button>
+    </form>
+</div>
+<?php
+        require('layout/footer.php');
+    ?>
+<script>
+// Logic validation cơ bản
+document.getElementById("formDoiMatKhau").addEventListener("submit", function(e) {
+    let isValid = true;
+    const inputs = this.querySelectorAll("input");
+    
+    inputs.forEach(input => {
+        const errorSpan = document.getElementById(input.id + "Error");
+        if (input.value.trim() === "") {
+            errorSpan.style.display = "block";
+            isValid = false;
+        } else {
+            errorSpan.style.display = "none";
+        }
+    });
 
+    const mkMoi = document.getElementById("matKhauMoi").value;
+    const nhapLai = document.getElementById("nhapLaiMK").value;
+    if (mkMoi !== nhapLai && nhapLai !== "") {
+        const errorConfirm = document.getElementById("nhapLaiMKError");
+        errorConfirm.textContent = "Mật khẩu xác nhận không khớp!";
+        errorConfirm.style.display = "block";
+        isValid = false;
+    }
 
-            <button type="submit" name="doimatkhau">Đổi mật khẩu</button>
-        </form>
-    </div>
+    if (!isValid) e.preventDefault();
+});
+</script>
 
-    <script src="js/validDoiMK.js"></script>
-    <!-- footer -->
-    <?php require('layout/footer.php'); ?>
-    <!-- end footer -->
 </body>
-
 </html>

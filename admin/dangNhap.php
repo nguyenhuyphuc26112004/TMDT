@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header('Location: quanLySP.php');
                 exit;
             }
-            $stmt->close();
+            
         } else {
             // Sai mật khẩu hoặc không phải admin
             header('Location: dangNhap.php?loi');

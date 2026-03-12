@@ -26,4 +26,4 @@ VALUES (1, 'Lựu', 'Trái cây Việt Nam', 'Kg', '1','30000', '1745559354_Lự
 , (25, 'Giỏ trái cây 4', 'Giỏ trái cây', 'Giỏ', '1', '700000', '1745676210_Giỏ quả trái cây 4.jpg', '1')
 , (26, 'Giỏ trái cây 5', 'Giỏ trái cây', 'Giỏ', '1', '800000', '1745676240_Giỏ quả trái cây 5.jpg', '1');
 
-INSERT INTO `nguoi_dung` (`id`, `id_vai_tro`, `ho_ten`, `gioi_tinh`, `so_dien_thoai`, `ten_dang_nhap`, `mat_khau`) VALUES (1, '2', 'Nguyễn Vanư A', 'NAM', '0123456789', 'admin', '123');
+INSERT INTO `nguoi_dung` (`id`, `id_vai_tro`, `ho_ten`, `gioi_tinh`, `so_dien_thoai`, `ten_dang_nhap`, `mat_khau`) VALUES (1, '2', 'Nguyễn Van A', 'NAM', '0123456789', 'admin', '123');
