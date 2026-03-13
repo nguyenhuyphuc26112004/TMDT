@@ -19,12 +19,13 @@ $User = getObjectById($con, 'nguoi_dung', $idCurrent);
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['idCheck'])) {
     $id = $_POST['idCheck'];
     $hoVaTen = $_POST['ho_ten'];
-    $soDienThoai = $_POST['so_dien_thoai'];
+    // Đã đổi từ so_dien_thoai sang email
+    $email = $_POST['email']; 
     $gioiTinh = $_POST['gioi_tinh'];
     $idVaiTro = $_POST['vai_tro'];
 
-    // gọi hàm của updateObjectById.php
-    updateUserById($con, $id, $hoVaTen, $idVaiTro, $soDienThoai, $gioiTinh);
+    // gọi hàm của updateObjectById.php (đã sửa tham số thứ 5 là email)
+    updateUserById($con, $id, $hoVaTen, $idVaiTro, $email, $gioiTinh);
 
     header('Location: quanLyKH.php');
     exit; 
@@ -41,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['idCheck'])) {
     integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
     crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <style>
-        /* CSS GỐC CHO SIDEBAR - ĐỒNG BỘ VỚI HỆ THỐNG */
+        /* GIỮ NGUYÊN TOÀN BỘ CSS CỦA PHÚC */
         body { background-color: #f4f5f7; font-family: Arial, sans-serif; margin: 0; }
         .container { display: flex; }
         .trangchu { padding: 0 20px; display: flex; flex-direction: column; width: 330px; background-color: #dbdbdb; min-height: 100vh; }
@@ -56,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['idCheck'])) {
         .danhmuc a:hover { color: #000; background: #ccc; border-radius: 4px; }
         .danhmuc a i { width: 25px; text-align: center; margin-right: 10px; }
 
-        /* TỐI ƯU GIAO DIỆN CẬP NHẬT */
         .update {
             flex: 1;
             padding: 40px;
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['idCheck'])) {
             max-width: 750px;
         }
         .title {
-            border-bottom: 2px solid #FBBE00; /* Màu nhấn riêng cho khách hàng */
+            border-bottom: 2px solid #FBBE00;
             margin-bottom: 25px;
             padding-bottom: 10px;
         }
@@ -173,9 +173,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['idCheck'])) {
                         </div>
 
                         <div class="field-group full-row">
-                            <label for="tel">Số điện thoại</label>
-                            <input type="text" id="tel" name="so_dien_thoai" value="<?= htmlspecialchars($User['so_dien_thoai']) ?>" placeholder="Nhập số điện thoại...">
-                            <span class="error" id="soDienThoaiError">Số điện thoại không đúng định dạng</span>
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="<?= htmlspecialchars($User['email']) ?>" placeholder="Nhập địa chỉ email...">
+                            <span class="error" id="emailError">Email không đúng định dạng</span>
                         </div>
 
                         <div class="field-group">

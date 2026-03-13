@@ -2,34 +2,20 @@
 // echo "hello from save_object.php <br>";
 require($_SERVER['DOCUMENT_ROOT'] . '/TMDT/php/connectMysql.php');
 
-// $con thuộc file connectMysql.php
-// hàm
-function hello()
-{
-    return "hello from save_object.php";
-}
-function saveUser($con, $idVaiTro,  $hoVaTen, $gioiTinh, $soDienThoai,$tenDangNhap, $matKhau)
-{
-    // câu lệnh thêm 1 bản ghi trong sql
-    $sql = "INSERT INTO nguoi_dung (id_vai_tro, ho_ten, gioi_tinh, so_dien_thoai, ten_dang_nhap, mat_khau ) VALUES (?, ?, ?, ?, ?, ?)";
 
-    // chuẩn bị câu lệnh
+function saveUser($con, $id_vai_tro, $ho_ten, $gioi_tinh, $email, $ten_dang_nhap, $mat_khau) {
+    // Câu lệnh SQL với 8 giá trị (id_vai_tro, ho_ten, gioi_tinh, email, ten_dang_nhap, mat_khau, so_lan_sai, thoi_gian_khoa)
+    $sql = "INSERT INTO nguoi_dung (id_vai_tro, ho_ten, gioi_tinh, email, ten_dang_nhap, mat_khau, so_lan_sai, thoi_gian_khoa) 
+            VALUES (?, ?, ?, ?, ?, ?, 0, NULL)";
+    
     $stmt = $con->prepare($sql);
-
-    // ktra câu lệnh đã săn sàng chưa
-    if ($stmt) {
-
-        // đã sẵn sàng
-        // gán các tham số vào câu lệnh
-        $stmt->bind_param("isssss", $idVaiTro, $hoVaTen, $gioiTinh, $soDienThoai, $tenDangNhap, $matKhau);
-
-        // thực thi câu lệnh 
-        if ($stmt->execute()) {
-            return "đã lưu user vào database";
-        } else {
-            return "Lỗi không lưu được user vào database";
-        }
-    } else {
-        return "Lỗi câu lệnh sql ";
-    }
+    
+    // 1 kiểu INT (i) và 5 kiểu STRING (s) cho 6 tham số truyền vào
+    $stmt->bind_param("isssss", $id_vai_tro, $ho_ten, $gioi_tinh, $email, $ten_dang_nhap, $mat_khau);
+    
+    $ketQua = $stmt->execute();
+    $stmt->close();
+    
+    return $ketQua;
 }
+?>

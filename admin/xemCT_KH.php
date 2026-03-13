@@ -28,7 +28,7 @@ $Role = getRoleById($con, $User['id_vai_tro']);
     integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
     crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <style>
-        /* CSS GỐC CHO SIDEBAR - ĐỒNG BỘ VỚI FILE TRƯỚC */
+        /* GIỮ NGUYÊN TOÀN BỘ CSS CỦA PHÚC */
         body { background-color: #f4f5f7; font-family: Arial, sans-serif; margin: 0; }
         .container { display: flex; }
         .trangchu { padding: 0 20px; display: flex; flex-direction: column; width: 330px; background-color: #dbdbdb; min-height: 100vh; }
@@ -43,7 +43,6 @@ $Role = getRoleById($con, $User['id_vai_tro']);
         .danhmuc a:hover { color: #000; background: #ccc; border-radius: 4px; }
         .danhmuc a i { width: 25px; text-align: center; margin-right: 10px; }
 
-        /* TỐI ƯU PHẦN HIỂN THỊ CHI TIẾT (VIEW) */
         .view {
             flex: 1;
             padding: 40px;
@@ -161,8 +160,8 @@ $Role = getRoleById($con, $User['id_vai_tro']);
                             <td><?php echo $User['gioi_tinh']; ?></td>
                         </tr>
                         <tr>
-                            <th><i class="fa-solid fa-phone"></i> Số điện thoại</th>
-                            <td><?php echo $User['so_dien_thoai']; ?></td>
+                            <th><i class="fa-solid fa-envelope"></i> Email liên hệ</th>
+                            <td><?php echo htmlspecialchars($User['email']); ?></td>
                         </tr>
                         <tr>
                             <th><i class="fa-solid fa-circle-user"></i> Tên đăng nhập</th>
@@ -170,13 +169,13 @@ $Role = getRoleById($con, $User['id_vai_tro']);
                         </tr>
                         <tr>
                             <th><i class="fa-solid fa-lock"></i> Mật khẩu</th>
-                            <td><?= $User['mat_khau'];?></td>
+                            <td><?= htmlspecialchars($User['mat_khau']);?></td>
                         </tr>
                         <tr>
                             <th><i class="fa-solid fa-user-shield"></i> Vai trò</th>
                             <td>
                                 <span style="color: #24ACF2; font-weight: bold;">
-                                    <?php echo $Role['ten']; ?>
+                                    <?php echo htmlspecialchars($Role['ten']); ?>
                                 </span>
                             </td>
                         </tr>

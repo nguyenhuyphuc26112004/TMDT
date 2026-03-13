@@ -1,7 +1,7 @@
 <?php
 // ktra người dùng đăng nhập hay chưa
 require('../php/checkSession.php');
-checkSession(2);
+checkSession(2); // Chỉ Admin (Role 2) mới được vào
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -9,120 +9,125 @@ checkSession(2);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Ký - admin</title>
-
+    <title>Thêm Người Dùng - Admin</title>
     <link rel="stylesheet" href="css/dangKy.css">
     <style>
-        .error {
-            color: red;
-            display: none;
-        }
-
-        .red {
-            color: red;
-
-        }
+        .error { color: red; display: none; font-size: 12px; }
+        .red { color: red; }
+        .dau_vao select { width: 100%; padding: 8px; border-radius: 4px; }
     </style>
 </head>
 
 <body>
 
-    <!-- header -->
     <?php
     require('../php/admin/saveObject.php');
-    // Kiểm tra nếu người dùng nhấn nút "Dăng ký"
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $tenDangNhap = $_POST['tenDangNhap'];
 
-        // Kiểm tra tên đăng nhập đã tồn tại trong cơ sở dữ liệu chưa
-        $sql = "SELECT * FROM nguoi_dung WHERE ten_dang_nhap = ?";
+    $error = "";
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $tenDangNhap = trim($_POST['tenDangNhap']);
+        $email = trim($_POST['email']);
+
+        // Kiểm tra tên đăng nhập hoặc email đã tồn tại chưa
+        $sql = "SELECT * FROM nguoi_dung WHERE ten_dang_nhap = ? OR email = ?";
         $stmt = $con->prepare($sql);
-        $stmt->bind_param("s", $tenDangNhap);
+        $stmt->bind_param("ss", $tenDangNhap, $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            // Tên đăng nhập đã tồn tại
-            $error = "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.";
+            $error = "Tên đăng nhập hoặc Email đã tồn tại trong hệ thống.";
         } else {
-            $hoVaTen = $_POST['hoVaTen'];  // thực hiện hứng dữ liệu bằng cách gán chúng vào 1 biến khác
-            $soDienThoai = $_POST['soDienThoai'];
+            $hoVaTen = $_POST['hoVaTen'];
             $gioiTinh = $_POST['gioiTinh'];
-            $tenDangNhap = $_POST['tenDangNhap'];
             $matKhau = $_POST['matKhau'];
             $vaiTro = $_POST['vai_tro'];
 
-            // $idVaiTro = '1'; // 1 : User 
-            $nhapLaiMatKhau = $_POST['nhapLaiMatKhau'];
-
-
-            //  gọi hàm của file saveObject.php
-            // hàm saveUserAtAdmin() thực hiện chức năng lưu 1 user xuống database
-            $ketQua = saveUserAtAdmin($con, $vaiTro, $hoVaTen, $gioiTinh, $soDienThoai, $tenDangNhap, $matKhau);
-            // Sau khi xóa xong, chuyển hướng trở lại trang quản lý khách hàng
-            header('Location: quanLyKH.php');
-            exit; // không thực hiện các câu lệnh phía sau 
+            // Gọi hàm lưu dữ liệu
+            $ketQua = saveUserAtAdmin($con, $vaiTro, $hoVaTen, $gioiTinh, $email, $tenDangNhap, $matKhau);
+            
+            if ($ketQua === true) {
+                header('Location: quanLyKH.php');
+                exit;
+            } else {
+                $error = "Lỗi lưu dữ liệu: " . $ketQua;
+            }
         }
     }
     ?>
-    <!-- end header -->
+
     <div class="box">
-        <h2>Đăng ký</h2>
+        <h2>Thêm Người Dùng Mới</h2>
         <form id="formDangKyAdmin" action="dangKy.php" method="post">
+            
             <div class="dau_vao">
                 <label for="hoVaTen">Họ và tên</label>
-                <input type="text" id="hoVaTen" name="hoVaTen" placeholder="Nhập họ và tên" style="opacity: 0.6;">
+                <input type="text" id="hoVaTen" name="hoVaTen" placeholder="Nhập họ và tên" required>
             </div>
-            <span class="error " id="hoVaTenError">Họ và tên không được để trống</span>
+            <span class="error" id="hoVaTenError">Họ và tên không được để trống</span>
 
             <div class="dau_vao">
-                <label for="soDienThoai">Số điện thoại</label>
-                <input type="text" id="soDienThoai" name="soDienThoai" placeholder="Nhập số điện thoại">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Nhập địa chỉ email" required>
             </div>
-            <span class="error" id="soDienThoaiError"> Số điện thoại không được để trống</span>
+            <span class="error" id="emailError">Email không được để trống</span>
 
             <div class="gioi_tinh">
                 <p>Giới tính</p>
-                <input type="radio" name="gioiTinh" value="Nam">Nam
-                <input type="radio" name="gioiTinh" value="Nữ">Nữ
+                <input type="radio" name="gioiTinh" value="Nam" checked> Nam
+                <input type="radio" name="gioiTinh" value="Nữ"> Nữ
             </div>
 
             <div class="dau_vao">
                 <label for="tenDangNhap">Tên đăng nhập</label>
-                <input type="text" id="tenDangNhap" name="tenDangNhap" placeholder="Nhập tên đăng nhập">
+                <input type="text" id="tenDangNhap" name="tenDangNhap" placeholder="Nhập tên đăng nhập" required>
             </div>
-            <!-- Hiển thị thông báo lỗi nếu tên đăng nhập đã tồn tại -->
-
-            <span class="red"><?php echo empty($error) ? ' ' : $error ?></span>
-
-            <span class="error" id="tenDangNhapError"> Tên đăng nhập không được để trống</span>
+            <span class="red"><?php echo $error; ?></span>
+            <span class="error" id="tenDangNhapError">Tên đăng nhập không được để trống</span>
 
             <div class="dau_vao">
-                <label for="vai-tro"> Vai trò</label><br>
-                <select id="vai-tro" name="vai_tro" style="opacity: 0.6;" required>
-                    <option value="1">USER</option>
-                    <option value="2">ADMIN</option>
+                <label for="vai-tro">Vai trò hệ thống</label><br>
+                <select id="vai-tro" name="vai_tro" required>
+                    <option value="1">USER (Khách hàng)</option>
+                    <option value="2">ADMIN (Quản trị viên)</option>
                 </select>
             </div>
 
             <div class="dau_vao">
                 <label for="matKhau">Mật Khẩu</label>
-                <input type="password" id="matKhau" name="matKhau" placeholder="Nhập mật khẩu">
+                <input type="password" id="matKhau" name="matKhau" placeholder="Nhập mật khẩu" required>
             </div>
-            <span class="error" id="matKhauError"> Mật Khẩu không được để trống</span>
+            <span class="error" id="matKhauError">Mật khẩu không được để trống</span>
 
             <div class="dau_vao">
                 <label for="nhapLaiMatKhau">Nhập lại Mật Khẩu</label>
-                <input type="password" id="nhapLaiMatKhau" name="nhapLaiMatKhau" placeholder="Nhập lại mật khẩu">
+                <input type="password" id="nhapLaiMatKhau" name="nhapLaiMatKhau" placeholder="Xác nhận lại mật khẩu" required>
             </div>
-            <span class="error" id="nhapLaiMatKhauError">Nhập lại mật Khẩu sai </span>
+            <span class="error" id="nhapLaiMatKhauError">Mật khẩu xác nhận không khớp</span>
 
             <div class="btn-dangKy">
-                <button type="submit">Đăng ký</button>
+                <button type="submit">Thêm Thành Viên</button>
             </div>
         </form>
     </div>
-    <script src="js/validDangKy.js"></script>
-</body>
 
+    <script>
+        document.getElementById('formDangKyAdmin').addEventListener('submit', function(e) {
+            let isValid = true;
+            const pass = document.getElementById('matKhau').value;
+            const confirmPass = document.getElementById('nhapLaiMatKhau').value;
+            const errorConfirm = document.getElementById('nhapLaiMatKhauError');
+
+            if (pass !== confirmPass) {
+                errorConfirm.style.display = 'block';
+                isValid = false;
+            } else {
+                errorConfirm.style.display = 'none';
+            }
+
+            if (!isValid) e.preventDefault();
+        });
+    </script>
+</body>
 </html>

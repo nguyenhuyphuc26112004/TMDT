@@ -1,56 +1,63 @@
 <?php
-require('php/client/saveObject.php'); 
+session_start();
+require('php/client/saveObject.php'); // Chứa hàm saveUser
 
-$hoVaTen = $phone = $username = $password = $confirm = $gender = "";
-$errorFullname = $errorPhone = $errorUsername = $errorPassword = $errorConfirm = "";
+$hoVaTen = $email = $username = $password = $confirm = $gender = "";
+$errorFullname = $errorEmail = $errorUsername = $errorPassword = $errorConfirm = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // Lấy dữ liệu từ POST
+    // 1. Lấy và làm sạch dữ liệu
     $hoVaTen  = trim($_POST['hoVaTen'] ?? '');
-    $phone    = trim($_POST['soDienThoai'] ?? '');
+    $email    = trim($_POST['email'] ?? '');
     $username = trim($_POST['tenDangNhap'] ?? '');
-    $password = trim($_POST['matKhau'] ?? '');
-    $confirm  = trim($_POST['nhapLaiMatKhau'] ?? '');
+    $password = $_POST['matKhau'] ?? ''; 
+    $confirm  = $_POST['nhapLaiMatKhau'] ?? '';
     $gender   = $_POST['gioiTinh'] ?? 'nam';
     
-    $idVaiTro = '1'; // Mặc định Role User
+    $idVaiTro = 1; // Mặc định Role khách hàng
 
-    // 1. Kiểm tra rỗng
+    // 2. Kiểm tra các trường rỗng
     if ($hoVaTen === "")  $errorFullname = "Họ và tên không được để trống";
-    if ($phone === "")    $errorPhone = "Số điện thoại không được để trống";
+    
+    if ($email === "") {
+        $errorEmail = "Email không được để trống";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errorEmail = "Định dạng email không hợp lệ";
+    }
+
     if ($username === "") $errorUsername = "Tên đăng nhập không được để trống";
     if ($password === "") $errorPassword = "Mật khẩu không được để trống";
 
-    // 2. Kiểm tra mật khẩu khớp
-    if ($password !== "" && $confirm !== "" && $password !== $confirm) {
+    // 3. Kiểm tra mật khẩu khớp
+    if ($password !== "" && $password !== $confirm) {
         $errorConfirm = "Mật khẩu nhập lại không khớp";
     }
 
-    // 3. Kiểm tra trùng tên đăng nhập
-    if ($errorUsername === "") {
-        $sql = "SELECT * FROM nguoi_dung WHERE ten_dang_nhap = ?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $errorUsername = "Tên đăng nhập đã tồn tại";
+    // 4. Kiểm tra trùng Tên đăng nhập hoặc Email trong Database
+    if (empty($errorUsername) && empty($errorEmail)) {
+        $sqlCheck = "SELECT id FROM nguoi_dung WHERE ten_dang_nhap = ? OR email = ?";
+        $stmtCheck = $con->prepare($sqlCheck);
+        $stmtCheck->bind_param("ss", $username, $email);
+        $stmtCheck->execute();
+        $resCheck = $stmtCheck->get_result();
+        if ($resCheck->num_rows > 0) {
+            $errorUsername = "Tên đăng nhập hoặc Email đã tồn tại";
         }
-        $stmt->close();
+        $stmtCheck->close();
     }
 
-    // 4. Nếu không có lỗi thì gọi hàm saveUser
-    if (empty($errorUsername) && empty($errorPassword) && empty($errorConfirm) && empty($errorPhone) && empty($errorFullname)) {
+    // 5. Lưu dữ liệu nếu không có lỗi
+    if (empty($errorFullname) && empty($errorEmail) && empty($errorUsername) && empty($errorPassword) && empty($errorConfirm)) {
         
-        // Gọi hàm saveUser với đầy đủ tham số
-        $ketQua = saveUser($con, $idVaiTro, $hoVaTen, $gender, $phone, $username, $password);
+        // Gọi hàm saveUser (lưu mật khẩu trực tiếp, không băm)
+        $ketQua = saveUser($con, $idVaiTro, $hoVaTen, $gender, $email, $username, $password);
 
         if ($ketQua) {
-            header('Location: dangNhap.php');
+            echo "<script>alert('Đăng ký tài khoản thành công!'); window.location='dangNhap.php';</script>";
             exit;
         } else {
-            $errorUsername = "Có lỗi xảy ra khi lưu dữ liệu.";
+            $errorUsername = "Lỗi hệ thống: Không thể lưu dữ liệu.";
         }
     }
 }
@@ -65,22 +72,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link rel="stylesheet" href="css/dangKy.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        .register { height: auto; min-height: 580px;}
-        
-        .gender-box {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin: 5px 0 15px 10px;
-            color: #555;
-            font-size: 14px;
-        }
+        .register { height: auto; min-height: 550px; }
+        .gender-box { display: flex; align-items: center; gap: 20px; margin: 5px 0 15px 10px; color: #555; font-size: 14px; }
         .gender-option { display: flex; align-items: center; cursor: pointer; }
         .gender-option input { width: auto !important; margin-right: 5px; cursor: pointer; }
-        
-        /* Hiển thị lỗi đỏ nếu có class has-error */
         .input-box.has-error input { border: 1px solid red; }
-        .input-box.has-error .error { display: block; color: red; font-size: 12px; }
+        .input-box.has-error .error { display: block; color: red; font-size: 12px; margin-top: 10px; }
+        .error span {color: red; }
     </style>
 </head>
 <body>
@@ -89,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <div class="register">
         <div class="left-register">
             <h2 style="margin-bottom: 20px;">Đăng ký</h2>
-            <form action="" method="POST">
+            <form action="" method="POST" id="registerForm">
                 
                 <div class="input-box <?= $errorFullname ? 'has-error' : '' ?>">
                     <input type="text" name="hoVaTen" placeholder="Họ và tên" value="<?= htmlspecialchars($hoVaTen) ?>">
@@ -97,10 +95,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <div class="error"><span><?= $errorFullname ?></span></div>
                 </div>
 
-                <div class="input-box <?= $errorPhone ? 'has-error' : '' ?>">
-                    <input type="tel" name="soDienThoai" placeholder="Số điện thoại" value="<?= htmlspecialchars($phone) ?>">
-                    <i class="fa-solid fa-phone"></i>
-                    <div class="error"><span><?= $errorPhone ?></span></div>
+                <div class="input-box <?= $errorEmail ? 'has-error' : '' ?>">
+                    <input type="email" name="email" placeholder="Email" value="<?= htmlspecialchars($email) ?>">
+                    <i class="fa-solid fa-envelope"></i>
+                    <div class="error"><span><?= $errorEmail ?></span></div>
                 </div>
 
                 <div class="input-box <?= $errorUsername ? 'has-error' : '' ?>">
@@ -143,10 +141,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </div>
 
 <script>
-const form = document.querySelector("form");
+const form = document.getElementById("registerForm");
+
 form.addEventListener("submit", function (e) {
     let isValid = true;
-    const inputs = form.querySelectorAll("input[type='text'], input[type='password'], input[type='tel']");
+    
+    // 1. Kiểm tra các ô nhập liệu chung
+    const inputs = form.querySelectorAll("input[type='text'], input[type='password'], input[type='email']");
     
     inputs.forEach(input => {
         const box = input.closest(".input-box");
@@ -158,12 +159,24 @@ form.addEventListener("submit", function (e) {
             isValid = false;
         } else {
             box.classList.remove("has-error");
+            span.textContent = "";
         }
     });
 
-    // Kiểm tra khớp mật khẩu ở phía client
+    // 2. Kiểm tra định dạng Email bằng JS
+    const emailInput = form.querySelector('input[name="email"]');
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailInput.value.trim() !== "" && !emailPattern.test(emailInput.value)) {
+        const emailBox = emailInput.closest(".input-box");
+        emailBox.classList.add("has-error");
+        emailBox.querySelector(".error span").textContent = "Email không đúng định dạng (ví dụ: abc@gmail.com)";
+        isValid = false;
+    }
+
+    // 3. Kiểm tra khớp mật khẩu
     const pass = form.querySelector('input[name="matKhau"]').value;
     const confirm = form.querySelector('input[name="nhapLaiMatKhau"]').value;
+    
     if (pass !== confirm && confirm !== "") {
         const confirmBox = form.querySelector('input[name="nhapLaiMatKhau"]').closest(".input-box");
         confirmBox.classList.add("has-error");
@@ -171,7 +184,10 @@ form.addEventListener("submit", function (e) {
         isValid = false;
     }
 
-    if (!isValid) e.preventDefault();
+    // Ngăn chặn submit nếu có lỗi
+    if (!isValid) {
+        e.preventDefault();
+    }
 });
 </script>
 

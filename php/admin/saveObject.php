@@ -1,19 +1,23 @@
 <?php
 require($_SERVER['DOCUMENT_ROOT'] . '/TMDT/php/connectMysql.php');
 
-function saveUserAtAdmin($con, $idVaiTro,  $hoVaTen, $gioiTinh, $soDienThoai,  $tenDangNhap, $matKhau)
+function saveUserAtAdmin($con, $idVaiTro, $hoVaTen, $gioiTinh, $email, $tenDangNhap, $matKhau)
 {
-    $sql = "INSERT INTO nguoi_dung (id_vai_tro, ho_ten, gioi_tinh, so_dien_thoai, ten_dang_nhap, mat_khau ) VALUES (?, ?, ?, ?, ?, ?)";
+    // Thêm các cột mới vào câu lệnh INSERT, đặt giá trị mặc định cho OTP và khóa tài khoản
+    $sql = "INSERT INTO nguoi_dung (id_vai_tro, ho_ten, gioi_tinh, email, ten_dang_nhap, mat_khau, so_lan_sai, thoi_gian_khoa) 
+            VALUES (?, ?, ?, ?, ?, ?, 0, NULL)";
+            
     $stmt = $con->prepare($sql);
     if ($stmt) {
-        $stmt->bind_param("isssss", $idVaiTro, $hoVaTen, $gioiTinh, $soDienThoai,  $tenDangNhap, $matKhau);
+        // "isssss" ứng với: int, string, string, string, string, string
+        $stmt->bind_param("isssss", $idVaiTro, $hoVaTen, $gioiTinh, $email, $tenDangNhap, $matKhau);
         if ($stmt->execute()) {
-            return "đã lưu user vào database";
+            return true;
         } else {
-            return "Lỗi không lưu được user vào database";
+            return "Lỗi: " . $stmt->error;
         }
     } else {
-        return "Lỗi câu lệnh sql ";
+        return "Lỗi câu lệnh SQL";
     }
 }
 

@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
                 </div>
 
-                <p style="cursor: pointer; font-size: 13px;">Forgot password?</p>
+                <a href="quenMatKhau.php" style="font-size: 13px; text-decoration: none; margin-bottom: 5px;">Forgot password</a>
                 <button type="submit">Đăng nhập</button>
 
                 <div class="divider">

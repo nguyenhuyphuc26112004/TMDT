@@ -7,27 +7,27 @@ function hello()
     return "hello from updateObjectById.php";
 }
 
-function updateUserById($con, $id, $hoVaTen, $idVaiTro, $soDienThoai, $gioiTinh)
+function updateUserById($con, $id, $hoVaTen, $idVaiTro, $email, $gioiTinh)
 {
-    $sql = "UPDATE nguoi_dung SET ho_ten = ? , id_vai_tro = ? , so_dien_thoai = ? , gioi_tinh = ? Where id = ?";
-    // chuẩn bị câu lệnh
+    // 1. Sửa câu lệnh SQL: đổi so_dien_thoai thành email
+    $sql = "UPDATE nguoi_dung SET ho_ten = ?, id_vai_tro = ?, email = ?, gioi_tinh = ? WHERE id = ?";
+    
+    // Chuẩn bị câu lệnh
     $stmt = $con->prepare($sql);
 
-    // ktra câu lệnh đã săn sàng chưa
+    // Kiểm tra câu lệnh đã sẵn sàng chưa
     if ($stmt) {
+        
+        $stmt->bind_param("sissi", $hoVaTen, $idVaiTro, $email, $gioiTinh, $id);
 
-        // đã sẵn sàng
-        // gán các tham số vào câu lệnh
-        $stmt->bind_param("sissi", $hoVaTen, $idVaiTro, $soDienThoai, $gioiTinh,  $id);
-
-        // thực thi câu lệnh 
+        // Thực thi câu lệnh 
         if ($stmt->execute()) {
             return "đã cập nhật user vào database";
         } else {
-            return "Lỗi không cập nhật được user vào database";
+            return "Lỗi không cập nhật được user vào database: " . $stmt->error;
         }
     } else {
-        return "Lỗi câu lệnh sql ";
+        return "Lỗi câu lệnh sql";
     }
 }
 

@@ -84,6 +84,14 @@ INSERT INTO `vai_tro` VALUES (1,'USER'),(2,'ADMIN');
 
 ALTER TABLE `don_hang` 
 ADD COLUMN `ngay_dat` DATETIME DEFAULT CURRENT_TIMESTAMP;
-ADD COLUMN `pt_thanh_toan` VARCHAR(255) DEFAULT NULL;
+ADD COLUMN `pt_thanh_toan` VARCHAR(255) DEFAULT NULL,
 ADD COLUMN `trang_thai_thanh_toan` VARCHAR(50) DEFAULT 'Chưa thanh toán' AFTER `trang_thai`,
 ADD COLUMN `ma_chuyen_khoan` VARCHAR(100) DEFAULT NULL AFTER `trang_thai_thanh_toan`;
+
+ALTER TABLE `nguoi_dung` 
+  DROP COLUMN `so_dien_thoai`,
+  ADD COLUMN `email` VARCHAR(100) AFTER `gioi_tinh`,
+  ADD COLUMN `ma_otp` VARCHAR(10) DEFAULT NULL AFTER `mat_khau`,
+  ADD COLUMN `het_han_otp` DATETIME DEFAULT NULL AFTER `ma_otp`,
+  ADD COLUMN `so_lan_sai` INT DEFAULT 0 AFTER `mat_khau`,
+  ADD COLUMN `thoi_gian_khoa` DATETIME DEFAULT NULL AFTER `so_lan_sai`;

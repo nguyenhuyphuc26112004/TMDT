@@ -10,8 +10,8 @@ require_once('../php/admin/cart.php'); // $con nằm trong file này hoặc conn
 $searchTerm = isset($_GET['search']) ? mysqli_real_escape_string($con, trim($_GET['search'])) : '';
 
 if (!empty($searchTerm)) {
-    // Truy vấn lọc theo ID, Họ tên hoặc Tên đăng nhập
-    $sql = "SELECT * FROM nguoi_dung WHERE id LIKE '%$searchTerm%' OR ho_ten LIKE '%$searchTerm%' OR ten_dang_nhap LIKE '%$searchTerm%'";
+    // Truy vấn lọc theo ID, Họ tên, Tên đăng nhập hoặc Email (đã cập nhật)
+    $sql = "SELECT * FROM nguoi_dung WHERE id LIKE '%$searchTerm%' OR ho_ten LIKE '%$searchTerm%' OR ten_dang_nhap LIKE '%$searchTerm%' OR email LIKE '%$searchTerm%'";
     $result = mysqli_query($con, $sql);
     $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 } else {
@@ -27,6 +27,7 @@ if (!empty($searchTerm)) {
     <title>Quản lý người dùng</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <style>
+        /* GIỮ NGUYÊN CSS GỐC CỦA BẠN */
         body { background-color: #f4f5f7; font-family: Arial, sans-serif; margin: 0; }
         .container { display: flex; }
         .trangchu { padding: 0 20px; display: flex; flex-direction: column; width: 330px; background-color: #dbdbdb; min-height: 100vh; }
@@ -67,10 +68,10 @@ if (!empty($searchTerm)) {
             <div class="list-tieude">
                 <p><i class="fa-solid fa-layer-group"></i> Danh mục quản lý</p>
                 <div class="danhmuc">
-                    <a href="quanLyKH.php"><i class="fa-solid fa-users"></i> Quản lý người dùng</a>
+                    <a href="quanLyKH.php" style="background: #ccc; color: #000;"><i class="fa-solid fa-users"></i> Quản lý người dùng</a>
                     <a href="quanLySP.php"><i class="fa-solid fa-box"></i> Quản lý sản phẩm</a>
                     <a href="quanLyDH.php"><i class="fa-solid fa-cart-shopping"></i> Quản lý đơn hàng</a>
-                    <a href="thongKe.php" style="font-weight:bold;"><i class="fa-solid fa-chart-line"></i> Thống kê</a>
+                    <a href="thongKe.php"><i class="fa-solid fa-chart-line"></i> Thống kê</a>
                 </div>
                 <p><i class="fa-solid fa-user-gear"></i> Tài khoản</p>
                 <div class="danhmuc">
@@ -89,7 +90,7 @@ if (!empty($searchTerm)) {
 
             <div class="search-container">
                 <form action="" method="GET" class="search-form">
-                    <input type="text" name="search" placeholder="Nhập tên, ID hoặc username..." value="<?php echo htmlspecialchars($searchTerm); ?>">
+                    <input type="text" name="search" placeholder="Nhập tên, ID, username hoặc email..." value="<?php echo htmlspecialchars($searchTerm); ?>">
                     <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm</button>
                     <?php if(!empty($searchTerm)): ?><a href="quanLyKH.php" class="btn-reset">Làm mới</a><?php endif; ?>
                 </form>
@@ -99,10 +100,10 @@ if (!empty($searchTerm)) {
                 <thead>
                     <tr>
                         <th width="80">ID</th>
-                        <th widht = "300px">Họ và tên</th>
+                        <th>Họ và tên</th>
                         <th>Tên đăng nhập</th>
-                        <th>Số điện thoại</th>
-                        <th width="300px">Hoạt động</th>
+                        <th>Email liên hệ</th>
+                        <th width="280px">Hoạt động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -110,13 +111,13 @@ if (!empty($searchTerm)) {
                         <?php foreach ($users as $user): ?>
                             <tr>
                                 <td><b>#<?php echo $user['id'] ?></b></td>
-                                <td style="text-align: left; padding-left: 15px;"><?php echo $user['ho_ten'] ?></td>
-                                <td><?php echo $user['ten_dang_nhap'] ?></td>
-                                <td><?php echo $user['so_dien_thoai'] ?></td>
+                                <td style="text-align: left; padding-left: 15px;"><?php echo htmlspecialchars($user['ho_ten']) ?></td>
+                                <td><?php echo htmlspecialchars($user['ten_dang_nhap']) ?></td>
+                                <td><?php echo htmlspecialchars($user['email']) ?></td>
                                 <td class="action-group">
                                     <a class="btn-info" href="xemCT_KH.php?id=<?php echo $user['id'] ?>"><i class="fa-solid fa-eye"></i> Xem</a>
                                     <a class="btn-edit" href="capNhat_KH.php?id=<?php echo $user['id'] ?>"><i class="fa-solid fa-user-pen"></i> Sửa</a>
-                                    <a class="btn-delete" href="xoa_KH.php?id=<?php echo $user['id'] ?>"><i class="fa-solid fa-trash-can"></i> Xóa</a>
+                                    <a class="btn-delete" href="xoa_KH.php?id=<?php echo $user['id'] ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')"><i class="fa-solid fa-trash-can"></i> Xóa</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
