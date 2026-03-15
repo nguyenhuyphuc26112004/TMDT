@@ -1,6 +1,5 @@
 <?php
 session_start();
-// Đã đổi đường dẫn để khớp với thư mục dự án của Phúc
 require('php/connectMysql.php'); 
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
@@ -8,67 +7,57 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Đảm bảo các file PHPMailer nằm đúng thư mục gốc hoặc theo cấu trúc của bạn
 require 'PHPMailer/Exception.php';
 require 'PHPMailer/PHPMailer.php';
 require 'PHPMailer/SMTP.php';
 
 $error = $success = "";
 
-// Hủy phiên làm việc nếu người dùng muốn quay lại
 if (isset($_GET['action']) && $_GET['action'] == 'cancel') {
     unset($_SESSION['reset_email']);
-    header("Location: dangNhap.php"); // Quay về trang đăng nhập
+    header("Location: dangNhap.php");
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['btnGuiMa'])) {
-    // Đã đổi sang $con
     $email = mysqli_real_escape_string($con, $_POST['email']);
-    
-    // Kiểm tra email có tồn tại trong hệ thống không
     $sql = "SELECT id, ho_ten FROM nguoi_dung WHERE email = '$email'";
     $res = mysqli_query($con, $sql);
     
     if (mysqli_num_rows($res) > 0) {
         $row = mysqli_fetch_assoc($res);
         $tenNguoiDung = $row['ho_ten'];
-        
         $otp = rand(100000, 999999);
         $het_han = date("Y-m-d H:i:s", strtotime("+10 minutes"));
         
-        // Cập nhật OTP vào DB - Đã đổi sang $con
         $update_sql = "UPDATE nguoi_dung SET ma_otp = '$otp', het_han_otp = '$het_han' WHERE email = '$email'";
         
         if (mysqli_query($con, $update_sql)) {
             $mail = new PHPMailer(true);
             try {
-                // Cấu hình Server
                 $mail->isSMTP();
                 $mail->Host       = 'smtp.gmail.com';
                 $mail->SMTPAuth   = true;
                 $mail->Username   = 'phuc40965@gmail.com';
-                $mail->Password   = 'snyoshuogsuhmhwv'; // Mật khẩu ứng dụng của Phúc
+                $mail->Password   = 'snyoshuogsuhmhwv'; 
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port       = 587;
                 $mail->CharSet    = 'UTF-8';
 
-                // Người gửi & Người nhận
                 $mail->setFrom('phuc40965@gmail.com', 'Hệ thống TMDT');
                 $mail->addAddress($email, $tenNguoiDung);
 
-                // Nội dung Email
                 $mail->isHTML(true);
                 $mail->Subject = 'Mã OTP xác nhận quên mật khẩu';
                 $mail->Body    = "
-                    <div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd;'>
-                        <h2 style='color: #007bff;'>Xác nhận đổi mật khẩu</h2>
+                    <div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 500px;'>
+                        <h2 style='color: #007bff; text-align: center;'>Xác nhận đổi mật khẩu</h2>
                         <p>Chào <b>$tenNguoiDung</b>,</p>
                         <p>Bạn vừa yêu cầu lấy lại mật khẩu. Mã OTP của bạn là:</p>
-                        <div style='font-size: 24px; font-weight: bold; color: #dc3545; padding: 10px; background: #f8f9fa; display: inline-block;'>$otp</div>
+                        <div style='font-size: 30px; font-weight: bold; color: #dc3545; padding: 15px; background: #f8f9fa; text-align: center; border-radius: 5px; letter-spacing: 5px;'>$otp</div>
                         <p>Mã này có hiệu lực trong <b>10 phút</b>. Vui lòng không chia sẻ mã này cho bất kỳ ai.</p>
-                        <hr>
-                        <p style='font-size: 12px; color: #888;'>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
+                        <hr style='border: 0; border-top: 1px solid #eee;'>
+                        <p style='font-size: 12px; color: #888; text-align: center;'>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
                     </div>";
 
                 $mail->send();
@@ -76,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['btnGuiMa'])) {
                 header("Location: xac-nhan-otp.php");
                 exit();
             } catch (Exception $e) {
-                $error = "Không thể gửi mail. Lỗi: {$mail->ErrorInfo}";
+                $error = "Không thể gửi mail. Lỗi hệ thống.";
             }
         } else {
             $error = "Lỗi kết nối máy chủ, vui lòng thử lại.";
@@ -92,30 +81,124 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['btnGuiMa'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quên mật khẩu | TMDT</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        .error-msg { color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; text-align: center; border: 1px solid #f5c6cb; }
-        .back-link { display: block; margin-top: 15px; text-decoration: none; color: #6c757d; font-size: 14px; text-align: center; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: #e7f3ff;
+            color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 35px;
+        }
+        h2 { color: #333; margin-bottom: 10px; font-size: 24px; }
+        p.desc { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        
+        .error-msg {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border: 1px solid #f5c6cb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+        input[type="email"]:focus { border-color: #007bff; box-shadow: 0 0 8px rgba(0,123,255,0.1); }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover { background: #0056b3; }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #888;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
         .back-link:hover { color: #007bff; }
     </style>
 </head>
 <body>
-    <div class="login-box">
+    <div class="container">
+        <div class="icon-circle">
+            <i class="fa-solid fa-lock-open"></i>
+        </div>
         <form method="POST">
-            <h2 style="text-align: center;">Quên mật khẩu</h2>
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px; text-align: center;">Nhập email của bạn để nhận mã xác thực OTP.</p>
+            <h2>Quên mật khẩu?</h2>
+            <p class="desc">Đừng lo lắng! Hãy nhập email đã đăng ký, chúng tôi sẽ gửi mã OTP để bạn đặt lại mật khẩu.</p>
             
             <?php if($error): ?>
-                <div class="error-msg"><?= $error ?></div>
+                <div class="error-msg">
+                    <i class="fa-solid fa-triangle-exclamation"></i> <?= $error ?>
+                </div>
             <?php endif; ?>
 
-            <input type="email" name="email" placeholder="Địa chỉ Email" required 
-                   style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"
-                   value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" name="email" placeholder="Nhập email của bạn" required 
+                       value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
+            </div>
             
-            <button type="submit" name="btnGuiMa" style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Gửi mã xác nhận</button>
+            <button type="submit" name="btnGuiMa">Gửi mã xác nhận</button>
             
-            <a href="dangNhap.php" class="back-link"><i class="fa-solid fa-arrow-left"></i> Quay lại đăng nhập</a>
+            <a href="dangNhap.php" class="back-link">
+                <i class="fa-solid fa-arrow-left-long"></i> Quay lại đăng nhập
+            </a>
         </form>
     </div>
 </body>

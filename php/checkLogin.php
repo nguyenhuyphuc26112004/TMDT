@@ -46,14 +46,13 @@ function checkLogin($con, $username, $password)
         $stmt->bind_param("ss", $username, $password);
         $stmt->execute();
         $result = $stmt->get_result();
+        
         if ($result->num_rows > 0) {
-            // Lấy thông tin người dùng
+            // SỬA TẠI ĐÂY: Trả về mảng chứa thông tin user ($row) thay vì true
             $row = $result->fetch_assoc();
-            // Lưu vai trò vào session
-            $_SESSION["vaiTro"] = $row['id_vai_tro']; // Lưu vai trò của người dùng
-            return true;
+            return $row; 
         } else {
-            return false; // Nếu không có tài khoản
+            return false;
         }
     }
     return false;

@@ -1,6 +1,5 @@
 <?php
 session_start();
-// Chỉnh lại đường dẫn nếu file nằm trong thư mục khác
 require('php/connectMysql.php'); 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
@@ -20,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($new_password !== $confirm_password) {
         $error = "Mật khẩu nhập lại không khớp!";
     } else {
-        // Sử dụng biến $con thay vì $conn
         $sql = "SELECT ma_otp, het_han_otp FROM nguoi_dung WHERE email = '$email'";
         $result = mysqli_query($con, $sql);
         $user = mysqli_fetch_assoc($result);
@@ -32,8 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } elseif ($user['het_han_otp'] < $bay_gio) {
                 $error = "Mã xác nhận đã hết hạn!";
             } else {
-                // THÀNH CÔNG -> Cập nhật mật khẩu trực tiếp (KHÔNG DÙNG HASH)
-                // Đã chuyển thành $con
+                // THÀNH CÔNG -> Cập nhật mật khẩu
                 $update = "UPDATE nguoi_dung SET mat_khau = '$new_password', ma_otp = NULL, het_han_otp = NULL WHERE email = '$email'";
                 
                 if (mysqli_query($con, $update)) {
@@ -56,32 +53,152 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xác nhận OTP | TMDT</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        .login-box { max-width: 400px; margin: 80px auto; padding: 25px; background: #fff; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .login-box h2 { text-align: center; margin-bottom: 20px; }
-        .login-box p { text-align: center; font-size: 14px; color: #666; }
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .login-box button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .login-box button:hover { background: #218838; }
-        .error-p { color: red; text-align: center; font-size: 14px; margin-top: 10px; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            background: #e8f5e9;
+            color: #28a745;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+        }
+        h2 { color: #333; margin-bottom: 10px; font-size: 24px; }
+        p.desc { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        b.email-display { color: #007bff; word-break: break-all; }
+
+        .error-msg {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border: 1px solid #f5c6cb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 38px;
+            color: #aaa;
+        }
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+            margin-left: 5px;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+        input:focus { border-color: #28a745; box-shadow: 0 0 8px rgba(40,167,69,0.1); }
+
+        /* Style đặc biệt cho OTP để trông nổi bật */
+        input[name="otp"] {
+            letter-spacing: 4px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            padding-left: 15px; /* Bỏ padding-left của icon vì OTP căn giữa */
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        button:hover { background: #218838; }
+
+        .footer-links {
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .footer-links a { text-decoration: none; color: #888; transition: color 0.3s; }
+        .footer-links a:hover { color: #007bff; }
     </style>
 </head>
 <body>
-    <div class="login-box">
+    <div class="container">
+        <div class="icon-circle">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
         <form method="POST">
-            <h2>Đặt lại mật khẩu</h2>
-            <p>Mã được gửi tới: <b><?= htmlspecialchars($email) ?></b></p>
-            
-            <input type="text" name="otp" placeholder="Nhập OTP 6 số" required maxlength="6">
-            <input type="password" name="new_password" placeholder="Mật khẩu mới" required>
-            <input type="password" name="confirm_password" placeholder="Nhập lại mật khẩu mới" required>
-            
-            <button type="submit">Xác nhận đổi mật khẩu</button>
+            <h2>Xác thực OTP</h2>
+            <p class="desc">Chúng tôi đã gửi mã xác nhận đến địa chỉ email: <br><b class="email-display"><?= htmlspecialchars($email) ?></b></p>
             
             <?php if($error): ?>
-                <p class="error-p"><?= $error ?></p>
+                <div class="error-msg">
+                    <i class="fa-solid fa-circle-exclamation"></i> <?= $error ?>
+                </div>
             <?php endif; ?>
+
+            <div class="input-group">
+                <label>Mã xác thực</label>
+                <input type="text" name="otp" placeholder="••••••" required maxlength="6" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Mật khẩu mới</label>
+                <i class="fa-solid fa-key"></i>
+                <input type="password" name="new_password" placeholder="Nhập mật khẩu mới" required>
+            </div>
+
+            <div class="input-group">
+                <label>Xác nhận mật khẩu</label>
+                <i class="fa-solid fa-check-double"></i>
+                <input type="password" name="confirm_password" placeholder="Nhập lại mật khẩu mới" required>
+            </div>
+            
+            <button type="submit">Cập nhật mật khẩu</button>
+            
+            <div class="footer-links">
+                <a href="quen-mat-khau.php?action=cancel">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Gửi lại mã khác
+                </a>
+            </div>
         </form>
     </div>
 </body>
