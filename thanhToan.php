@@ -97,8 +97,7 @@ try {
     mysqli_commit($con);
 
     // 6. Chuyển hướng thành công
-    header('Location: trangChu.php?status=success&order_id=' . $idDonHang);
-
+    header('Location: donHang.php?msg=success&id=' . $idDonHang);
 } catch (Exception $e) {
     // Nếu có bất kỳ lỗi nào, hủy bỏ toàn bộ thay đổi
     mysqli_rollback($con);

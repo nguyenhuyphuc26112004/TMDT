@@ -15,9 +15,11 @@ checkSessionClient();
         :root {
             --primary-green: #28a745;
             --dark-green: #1e7e34;
+            --light-green: #ebfbee;
             --bg-gray: #f8f9fa;
-            --text-main: #333;
-            --text-muted: #777;
+            --text-main: #2d3436; /* Màu chữ chính đậm hơn để không bị mờ */
+            --text-sub: #636e72;  /* Màu chữ phụ */
+            --border-color: #dfe6e9;
         }
 
         body {
@@ -32,7 +34,7 @@ checkSessionClient();
             padding: 30px;
             background: #ffffff;
             border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             min-height: 550px;
         }
 
@@ -40,108 +42,145 @@ checkSessionClient();
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg-gray);
+            padding-bottom: 20px;
             margin-bottom: 30px;
         }
 
         .header-title h1 {
-            font-size: 22px;
-            color: var(--dark-green);
+            font-size: 24px;
+            color: var(--text-main); /* Chữ tiêu đề đậm rõ ràng */
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
-        /* Table Design tinh giản */
+        .header-title h1 i {
+            color: var(--primary-green);
+        }
+
+        /* Table Design */
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 12px;
+            border-spacing: 0 15px;
         }
 
         th {
             text-align: left;
-            padding: 10px 15px;
-            font-size: 13px;
-            color: var(--text-muted);
+            padding: 10px 20px;
+            font-size: 14px;
+            color: var(--text-main); /* Chữ th đậm hơn */
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         tbody tr {
             background-color: #fff;
-            transition: 0.3s;
+            transition: all 0.3s ease;
         }
 
         td {
-            padding: 20px 15px;
-            border-top: 1px solid #f1f1f1;
-            border-bottom: 1px solid #f1f1f1;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
         }
 
         /* Bo góc dòng */
-        td:first-child { border-left: 1px solid #f1f1f1; border-radius: 10px 0 0 10px; }
-        td:last-child { border-right: 1px solid #f1f1f1; border-radius: 0 10px 10px 0; }
+        td:first-child { border-left: 1px solid var(--border-color); border-radius: 12px 0 0 12px; }
+        td:last-child { border-right: 1px solid var(--border-color); border-radius: 0 12px 12px 0; }
 
         tbody tr:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
         }
 
-        /* Badge trạng thái nhẹ nhàng */
-        .badge {
-            padding: 6px 15px;
-            border-radius: 30px;
-            font-size: 11px;
+        /* Mã đơn hàng nổi bật */
+        .order-id {
             font-weight: 700;
+            font-size: 15px;
+        }
+
+        /* Badge trạng thái */
+        .badge {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
             display: inline-block;
         }
 
-        .status-pending { background: #fff4e5; color: #ff9800; }
-        .status-shipping { background: #e3f2fd; color: #2196f3; }
-        .status-received { background: #ebfbee; color: #2ecc71; }
-        .status-cancel { background: #fdf2f2; color: #e74c3c; }
+        .status-pending { background: #fff4e5; color: #d48806; }
+        .status-shipping { background: #e6f7ff; color: #1890ff; }
+        .status-received { background: #f6ffed; color: #52c41a; }
+        .status-cancel { background: #fff1f0; color: #f5222d; }
 
-        /* Nút bấm hiện đại */
+        /* Nút bấm */
         .btn {
             text-decoration: none;
-            padding: 8px 18px;
+            padding: 9px 20px;
             border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: 0.2s;
+            gap: 8px;
+            transition: all 0.2s ease;
         }
 
-        .btn-view { background: #f8f9fa; color: #444 !important; border: 1px solid #ddd; }
-        .btn-view:hover { background: #eee; }
+        /* NÚT CHI TIẾT MÀU XANH */
+        .btn-view { 
+            background: var(--light-green); 
+            color: var(--primary-green) !important; 
+            border: 1px solid var(--primary-green); 
+        }
 
-        .btn-cancel { background: #fff; color: #dc3545 !important; border: 1px solid #f5c6cb; }
-        .btn-cancel:hover { background: #dc3545; color: white !important; }
+        .btn-view:hover { 
+            background: var(--primary-green); 
+            color: white !important; 
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-cancel { 
+            background: #fff; 
+            color: #e74c3c !important; 
+            border: 1px solid #fab1a0; 
+        }
+
+        .btn-cancel:hover { 
+            background: #ff7675; 
+            color: white !important; 
+            border-color: #ff7675;
+        }
 
         /* Phân trang */
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin-top: 35px;
+            gap: 10px;
+            margin-top: 40px;
         }
 
         .pagination a {
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: 1px solid #eee;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
             color: var(--text-main);
             text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
         }
 
         .pagination a.active {
             background: var(--primary-green);
             color: white;
+            border-color: var(--primary-green);
+        }
+
+        .pagination a:hover:not(.active) {
+            background: var(--light-green);
             border-color: var(--primary-green);
         }
     </style>
@@ -165,8 +204,9 @@ checkSessionClient();
     if ($total_orders == 0) {
         echo '<div class="container-order" style="display:flex; align-items:center; justify-content:center; text-align:center;">
                 <div>
-                    <i class="fa-solid fa-box-open" style="font-size: 60px; color: #eee; margin-bottom: 15px;"></i>
-                    <h2 style="color: #bbb;">Bạn chưa có đơn hàng nào</h2>
+                    <i class="fa-solid fa-box-open" style="font-size: 80px; color: #dcdde1; margin-bottom: 20px;"></i>
+                    <h2 style="color: #636e72;">Bạn chưa có đơn hàng nào</h2>
+                    <a href="trangChu.php" class="btn btn-view" style="margin-top: 15px;">Mua sắm ngay nhé</a>
                 </div>
               </div>';
     } else {
@@ -174,17 +214,19 @@ checkSessionClient();
         <div class="container-order">
             <div class="header-title">
                 <h1><i class="fa-solid fa-receipt"></i> Lịch sử mua hàng</h1>
-                <span style="font-size: 13px; color: var(--text-muted);">Hiển thị <?php echo count($donHang); ?> đơn hàng gần nhất</span>
+                <span style="font-size: 14px; font-weight: 500;">
+                    Tổng số: <b><?php echo $total_orders; ?></b> đơn hàng
+                </span>
             </div>
 
             <table>
                 <thead>
                     <tr>
                         <th>Mã đơn</th>
-                        <th>Thời gian</th>
+                        <th>Thời gian đặt</th>
                         <th>Trạng thái</th>
-                        <th>Tổng tiền</th>
-                        <th>Thao tác</th>
+                        <th>Tổng thanh toán</th>
+                        <th style="text-align: center;">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -199,10 +241,10 @@ checkSessionClient();
                         }
                     ?>
                         <tr>
-                            <td><strong style="color: #2c3e50;">#<?php echo $dH['id'] ?></strong></td>
+                            <td><span class="order-id">#<?php echo $dH['id'] ?></span></td>
                             <td>
-                                <div style="font-weight: 500;"><?php echo date('d/m/Y', strtotime($dH['ngay_dat'])) ?></div>
-                                <small style="color: #999;"><?php echo date('H:i', strtotime($dH['ngay_dat'])) ?></small>
+                                <div style="font-weight: 600; color: var(--text-main);"><?php echo date('d/m/Y', strtotime($dH['ngay_dat'])) ?></div>
+                                <div style="font-size: 12px; "><?php echo date('H:i', strtotime($dH['ngay_dat'])) ?></div>
                             </td>
                             <td>
                                 <span class="badge <?php echo $statusClass; ?>">
@@ -210,21 +252,21 @@ checkSessionClient();
                                 </span>
                             </td>
                             <td>
-                                <span style="font-weight: 700; color: var(--dark-green); font-size: 15px;">
+                                <span style="font-weight: 800; color: #d63031; font-size: 16px;">
                                     <?php echo number_format($dH['tong_tien'], 0, ',', '.') ?> đ
                                 </span>
                             </td>
                             <td>
-                                <div style="display: flex; gap: 8px;">
+                                <div style="display: flex; gap: 10px; justify-content: center;">
                                     <a href="xemChiTietDH.php?id=<?php echo $dH['id'] ?>" class="btn btn-view">
-                                        <i class="fa-solid fa-eye"></i> Chi tiết
+                                        <i class="fa-solid fa-circle-info"></i> Chi tiết
                                     </a>
                                     
                                     <?php if ($dH['trang_thai'] == 'Đang chờ duyệt') { ?>
                                         <a href="huyDonHang.php?id=<?php echo $dH['id'] ?>" 
                                            class="btn btn-cancel" 
-                                           onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
-                                            <i class="fa-solid fa-xmark"></i> Hủy
+                                           onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng #<?php echo $dH['id'] ?>?')">
+                                            <i class="fa-solid fa-trash-can"></i> Hủy
                                         </a>
                                     <?php } ?>
                                 </div>
