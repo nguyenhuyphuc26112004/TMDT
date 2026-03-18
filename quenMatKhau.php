@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['btnGuiMa'])) {
             $error = "Lỗi kết nối máy chủ, vui lòng thử lại.";
         }
     } else {
-        $error = "Email này chưa được đăng ký trong hệ thống!";
+        $error = "Email này không tồn tại trong hệ thống!";
     }
 }
 ?>

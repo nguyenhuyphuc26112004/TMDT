@@ -15,11 +15,17 @@ if (isset($_POST['doimatkhau'])) {
         exit;
     }
 
+    // 2. Kiểm tra mật khẩu mới có trùng mật khẩu cũ không
+    if ($matKhauHT === $matKhauMoi) {
+        header('Location: doiMatKhau.php?loi=trung-mat-khau-cu');
+        exit;
+    }
+
     require('php/client/getObjectByCondition.php');
     $nguoiDung = getUserByUserName($con, $tenDangNhap);
 
     if (!empty($nguoiDung)) {
-        // 2. So sánh trực tiếp (Không dùng hàm băm)
+        // 3. So sánh trực tiếp mật khẩu cũ trong DB
         if ($nguoiDung['mat_khau'] === $matKhauHT) {
             
             $sql = "UPDATE nguoi_dung SET mat_khau = ? WHERE ten_dang_nhap = ?";
@@ -48,7 +54,6 @@ if (isset($_POST['doimatkhau'])) {
     <meta charset="UTF-8">
     <title>Đổi mật khẩu</title>
     <style>
-        /* CSS đồng bộ với form cũ của bạn */
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
         .box { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
         #formDoiMatKhau { background: #fff; padding: 30px; border-radius: 8px; width: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
@@ -59,7 +64,7 @@ if (isset($_POST['doimatkhau'])) {
         .error { color: red; font-size: 12px; display: none; margin-top: 5px; }
         button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
         button:hover { background-color: #218838; }
-        .msg-error { color: red; text-align: center; margin-bottom: 10px; }
+        .msg-error { color: red; text-align: center; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -75,6 +80,7 @@ if (isset($_POST['doimatkhau'])) {
             <?php 
                 if(isset($_GET['loi'])) {
                     if($_GET['loi'] == 'khong-khop') echo "Mật khẩu nhập lại không khớp!";
+                    else if($_GET['loi'] == 'trung-mat-khau-cu') echo "Mật khẩu mới không được giống mật khẩu cũ!";
                     else echo "Tên đăng nhập hoặc mật khẩu cũ không đúng!";
                 }
             ?>
@@ -107,18 +113,21 @@ if (isset($_POST['doimatkhau'])) {
         <button type="submit" name="doimatkhau">Đổi mật khẩu</button>
     </form>
 </div>
-<?php
+
+    <?php
         require('layout/footer.php');
     ?>
+
 <script>
-// Logic validation cơ bản
 document.getElementById("formDoiMatKhau").addEventListener("submit", function(e) {
     let isValid = true;
     const inputs = this.querySelectorAll("input");
     
+    // 1. Kiểm tra các trường trống
     inputs.forEach(input => {
         const errorSpan = document.getElementById(input.id + "Error");
         if (input.value.trim() === "") {
+            errorSpan.textContent = input.placeholder + " không được để trống";
             errorSpan.style.display = "block";
             isValid = false;
         } else {
@@ -126,8 +135,19 @@ document.getElementById("formDoiMatKhau").addEventListener("submit", function(e)
         }
     });
 
+    const mkCu = document.getElementById("matKhauHienTai").value;
     const mkMoi = document.getElementById("matKhauMoi").value;
     const nhapLai = document.getElementById("nhapLaiMK").value;
+
+    // 2. Kiểm tra mật khẩu mới trùng mật khẩu cũ (Frontend)
+    if (mkCu !== "" && mkMoi !== "" && mkCu === mkMoi) {
+        const errorMoi = document.getElementById("matKhauMoiError");
+        errorMoi.textContent = "Mật khẩu mới không được giống mật khẩu cũ!";
+        errorMoi.style.display = "block";
+        isValid = false;
+    }
+
+    // 3. Kiểm tra khớp mật khẩu nhập lại
     if (mkMoi !== nhapLai && nhapLai !== "") {
         const errorConfirm = document.getElementById("nhapLaiMKError");
         errorConfirm.textContent = "Mật khẩu xác nhận không khớp!";
