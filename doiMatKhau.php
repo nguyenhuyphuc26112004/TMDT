@@ -54,16 +54,16 @@ if (isset($_POST['doimatkhau'])) {
     <meta charset="UTF-8">
     <title>Đổi mật khẩu</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        body { background-color: #f4f4f4; margin: 0; padding: 0; }
         .box { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
         #formDoiMatKhau { background: #fff; padding: 30px; border-radius: 8px; width: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #333; }
         .dau_vao { margin-bottom: 15px; }
         .dau_vao p { margin: 0 0 5px 0; font-size: 14px; color: #555; font-weight: bold; }
-        .dau_vao input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .dau_vao input { width: 100%; margin-left: 10px; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
         .error { color: red; font-size: 12px; display: none; margin-top: 5px; }
-        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        button:hover { background-color: #218838; }
+        .box button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .box button:hover { background-color: #218838; }
         .msg-error { color: red; text-align: center; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>

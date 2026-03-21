@@ -49,8 +49,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 
                 // Chuyển hướng theo vai trò (Admin vào admin, User vào trang chủ)
                 
-                    header('Location: trangChu.php');
-                
+                if ($_SESSION["vaiTro"] == 2) {
+        // Nếu là Admin thì đẩy vào trang quản trị
+        header('Location: admin/quanLySP.php'); 
+    } else {
+        // Nếu là Khách thì vào trang chủ
+        header('Location: trangChu.php');
+    }
                 exit;
             } else {
                 // ĐĂNG NHẬP SAI: Xử lý tăng số lần sai

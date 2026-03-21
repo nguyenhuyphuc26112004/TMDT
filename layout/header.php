@@ -23,30 +23,28 @@ if (session_status() == PHP_SESSION_NONE) {
             </div>
             <div class="right-info-header">
                 <div class="right-info">
-                    <i class="fa-solid fa-circle-user"></i>
+                    <a href="hoSo.php" style="color: inherit; text-decoration: none;">
+                        <i class="fa-solid fa-circle-user"></i>
+                    </a>
                     <p>
                         <?php echo isset($_SESSION['tenDangNhap']) ? "Chào, " . htmlspecialchars($_SESSION['tenDangNhap']) : "Tài khoản"; ?>
                     </p>
                     <div class="log">
                         <?php
-                            if (session_status() == PHP_SESSION_NONE) {
-                                session_start(); // Chỉ gọi session_start nếu chưa có session nào được khởi động
-                            }
                             if (!isset($_SESSION['tenDangNhap'])){
                         ?>
                                 <div class="login"><a href="dangNhap.php">Đăng nhập</a></div>
                                 <div class="login"><a href="dangKy.php">Đăng ký</a></div>
                         <?php
-                            } 
-                            else 
-                            { 
+                            } else { 
                         ?>
-                            <div class="login"><a href="doiMatKhau.php">Đổi mật khẩu </a></div>
+                            <div class="login"><a href="hoSo.php">Hồ sơ cá nhân</a></div>
+                            <div class="login"><a href="doiMatKhau.php">Đổi mật khẩu</a></div>
                             <div class="login"><a href="gioHang.php">Giỏ hàng</a></div>
                             <div class="login"><a href="donHang.php">Đơn hàng</a></div>
                             <div class="login"><a href="php/client/logoutUser.php">Đăng xuất</a></div>
                         <?php
-                        }
+                            }
                         ?>                      
                     </div>
                 </div>
