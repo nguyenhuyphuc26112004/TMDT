@@ -82,14 +82,28 @@
             text-align: right; 
         }
 
-        /* Vùng chứa mã QR */
+        /* CSS bổ sung để điều khiển ẩn hiện logic mới */
+        #payment_section { display: none; } /* Mặc định ẩn cho đến khi validate xong thông tin */
+
         .checkout-wrapper #qr_code_area { 
             margin-top: 15px; 
             padding: 15px; 
             border: 1px dashed #007bff; 
             text-align: center; 
-            display: none; /* Mặc định ẩn, hiện khi chọn ONLINE */
+            display: none; 
             background: #f0f7ff;
+        }
+
+        .btn-tiep-tuc {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
         }
 
         .checkout-wrapper .btn-dat-hang { 
@@ -106,13 +120,6 @@
             margin: 25px auto 0 auto;
             display: block !important;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
-        }
-
-        .checkout-wrapper .btn-dat-hang:hover { 
-            background: #218838 !important; 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
         }
     </style>
 </head>
@@ -143,6 +150,8 @@
                         <textarea id="address" name="address" rows="3" placeholder="Địa chỉ chi tiết"></textarea>
                         <span class="error" id="addressError">Vui lòng nhập địa chỉ cụ thể</span>
                     </div>
+                    
+                    <button type="button" id="btnContinue" class="btn-tiep-tuc" onclick="checkInfoBeforePayment()">TIẾP TỤC CHỌN THANH TOÁN</button>
                 </div>
 
                 <div class="info-right">
@@ -167,59 +176,82 @@
 
                     <div class="tongCong">Tổng cộng: <?php echo number_format($tongTien, 0, ',', '.') ?>đ</div>
 
-                    <div class="payment-box" style="margin-top:20px; border:1px solid #eee; padding:15px; border-radius:8px;">
-                        <b>Phương thức thanh toán *</b><br><br>
-                        <label><input type="radio" name="payment_method" value="COD" checked onclick="toggleQR(false)"> Tiền mặt (COD)</label><br><br>
-                        <label><input type="radio" name="payment_method" value="ONLINE" onclick="toggleQR(true)"> Chuyển khoản VietQR</label>
-                        
-                        <div id="qr_code_area">
-                            <p style="font-size:13px; color:#555;">Quét mã bằng App Ngân hàng để thanh toán:</p>
-                            <?php 
-                                // Tạo URL VietQR an toàn hơn
-                                $bankID = "MB";
-                                $accountNo = "0368334112";
-                                $accountName = urlencode("NGUYEN HUY PHUC");
-                                $qrUrl = "https://img.vietqr.io/image/{$bankID}-{$accountNo}-compact2.png?amount={$tongTien}&addInfo={$maChuyenKhoan}&accountName={$accountName}";
-                            ?>
-                            <img src="<?php echo $qrUrl; ?>" style="width:100%; max-width:200px; border: 2px solid #fff;">
-                            <p style="margin-top:10px;">Nội dung: <b style="color:blue;"><?php echo $maChuyenKhoan ?></b></p>
+                    <div id="payment_section">
+                        <div class="payment-box" style="margin-top:20px; border:1px solid #eee; padding:15px; border-radius:8px;">
+                            <b>Phương thức thanh toán *</b><br><br>
+                            <label><input type="radio" name="payment_method" value="COD" checked onclick="toggleQR(false)"> Tiền mặt (COD)</label><br><br>
+                            <label><input type="radio" name="payment_method" value="ONLINE" onclick="toggleQR(true)"> Chuyển khoản VietQR</label>
+                            
+                            <div id="qr_code_area">
+                                <p style="font-size:13px; color:#555;">Quét mã bằng App Ngân hàng:</p>
+                                <?php 
+                                    $bankID = "MB";
+                                    $accountNo = "0368334112";
+                                    $accountName = urlencode("NGUYEN HUY PHUC");
+                                    $qrUrl = "https://img.vietqr.io/image/{$bankID}-{$accountNo}-compact2.png?amount={$tongTien}&addInfo={$maChuyenKhoan}&accountName={$accountName}";
+                                ?>
+                                <img src="<?php echo $qrUrl; ?>" style="width:100%; max-width:200px; border: 2px solid #fff;">
+                                <p style="margin-top:10px;">Nội dung: <b style="color:blue;"><?php echo $maChuyenKhoan ?></b></p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div style="margin-top:20px;">
-                        <label style="font-size:14px;"><input type="checkbox" id="terms"> Tôi đồng ý với điều khoản</label>
-                        <span class="error" id="termsError">Vui lòng đồng ý với điều khoản</span>
-                    </div>
+                        <div style="margin-top:20px;">
+                            <label style="font-size:14px;"><input type="checkbox" id="terms"> Tôi đồng ý với điều khoản</label>
+                            <span class="error" id="termsError">Vui lòng đồng ý với điều khoản</span>
+                        </div>
 
-                    <input type="hidden" name="tongTien" value="<?php echo $tongTien ?>">
-                    <input type="hidden" name="ma_chuyen_khoan" value="<?php echo $maChuyenKhoan ?>">
-                    
-                    <button type="submit" name="btn_dat_hang" class="btn-dat-hang">XÁC NHẬN ĐẶT HÀNG</button>
+                        <input type="hidden" name="tongTien" value="<?php echo $tongTien ?>">
+                        <input type="hidden" name="ma_chuyen_khoan" value="<?php echo $maChuyenKhoan ?>">
+                        
+                        <button type="submit" name="btn_dat_hang" class="btn-dat-hang">XÁC NHẬN ĐẶT HÀNG</button>
+                    </div>
                 </div>
             </div>
         </form>
     </div>
 
     <script>
+        // 1. Logic kiểm tra thông tin trước khi hiện phần thanh toán
+        function checkInfoBeforePayment() {
+            let isValid = true;
+            // Kiểm tra các trường bắt buộc
+            ['name', 'sdt', 'email', 'address'].forEach(id => {
+                let el = document.getElementById(id);
+                let err = document.getElementById(id + 'Error');
+                if(el.value.trim() === "") { 
+                    err.style.display = "block"; 
+                    el.style.borderColor = "red";
+                    isValid = false; 
+                } else { 
+                    err.style.display = "none"; 
+                    el.style.borderColor = "#ddd";
+                }
+            });
+
+            if(isValid) {
+                // Hiện phần thanh toán và ẩn nút tiếp tục
+                document.getElementById('payment_section').style.display = "block";
+                document.getElementById('btnContinue').style.display = "none";
+                // Tự động cuộn xuống phần thanh toán cho tiện
+                document.getElementById('payment_section').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert("Vui lòng nhập đầy đủ thông tin giao hàng!");
+            }
+        }
+
+        // 2. Logic ẩn/hiện mã QR
         function toggleQR(show) {
             document.getElementById('qr_code_area').style.display = show ? "block" : "none";
         }
 
+        // 3. Logic kiểm tra điều khoản khi nhấn Đặt hàng
         document.getElementById('formXacNhan').addEventListener('submit', function(e) {
-            let isValid = true;
-            ['name', 'sdt', 'email', 'address'].forEach(id => {
-                let el = document.getElementById(id);
-                let err = document.getElementById(id + 'Error');
-                if(el && el.value.trim() === "") { 
-                    err.style.display = "block"; isValid = false; 
-                } else if(err) { err.style.display = "none"; }
-            });
-
             if(!document.getElementById('terms').checked) {
-                document.getElementById('termsError').style.display = "block"; isValid = false;
-            } else { document.getElementById('termsError').style.display = "none"; }
-
-            if(!isValid) e.preventDefault();
+                document.getElementById('termsError').style.display = "block";
+                e.preventDefault();
+            } else { 
+                document.getElementById('termsError').style.display = "none"; 
+            }
         });
     </script>
 </body>

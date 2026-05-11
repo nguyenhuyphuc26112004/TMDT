@@ -134,7 +134,7 @@
                         <button type="submit" name="action" value="add">Thêm vào giỏ hàng</button>
                     </div>
                     <div class="datHang">
-                        <button type ="submit" name="action" value="buy">Đặt hàng</button>
+                        <button type ="submit" name="action" value="buy">Thanh toán</button>
                     </div>
                 </div> 
             </form>

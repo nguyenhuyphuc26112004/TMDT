@@ -1,7 +1,7 @@
 <?php
 // 1. Kiểm tra đăng nhập
 require('php/checkSession.php');
-checkSessionClient(); 
+checkSessionClient();
 require('php/connectMysql.php'); // Đảm bảo file này có biến $con
 
 $idNguoiDung = $_SESSION['idNguoiDung'];

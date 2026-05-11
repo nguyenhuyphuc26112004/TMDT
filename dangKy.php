@@ -27,7 +27,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     if ($username === "") $errorUsername = "Tên đăng nhập không được để trống";
-    if ($password === "") $errorPassword = "Mật khẩu không được để trống";
+    
+    // THÊM KIỂM TRA ĐỘ DÀI MẬT KHẨU Ở ĐÂY
+    if ($password === "") {
+        $errorPassword = "Mật khẩu không được để trống";
+    } elseif (strlen($password) < 8) {
+        $errorPassword = "Mật khẩu phải có tối thiểu 8 ký tự";
+    }
 
     // 3. Kiểm tra mật khẩu khớp
     if ($password !== "" && $password !== $confirm) {
@@ -49,10 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // 5. Lưu dữ liệu nếu không có lỗi
     if (empty($errorFullname) && empty($errorEmail) && empty($errorUsername) && empty($errorPassword) && empty($errorConfirm)) {
-        
-        // Gọi hàm saveUser (lưu mật khẩu trực tiếp, không băm)
         $ketQua = saveUser($con, $idVaiTro, $hoVaTen, $gender, $email, $username, $password);
-
         if ($ketQua) {
             echo "<script>alert('Đăng ký tài khoản thành công!'); window.location='dangNhap.php';</script>";
             exit;
@@ -88,7 +91,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="left-register">
             <h2 style="margin-bottom: 20px;">Đăng ký</h2>
             <form action="" method="POST" id="registerForm">
-                
                 <div class="input-box <?= $errorFullname ? 'has-error' : '' ?>">
                     <input type="text" name="hoVaTen" placeholder="Họ và tên" value="<?= htmlspecialchars($hoVaTen) ?>">
                     <i class="fa-solid fa-address-card"></i>
@@ -146,7 +148,6 @@ const form = document.getElementById("registerForm");
 form.addEventListener("submit", function (e) {
     let isValid = true;
     
-    // 1. Kiểm tra các ô nhập liệu chung
     const inputs = form.querySelectorAll("input[type='text'], input[type='password'], input[type='email']");
     
     inputs.forEach(input => {
@@ -163,7 +164,15 @@ form.addEventListener("submit", function (e) {
         }
     });
 
-    // 2. Kiểm tra định dạng Email bằng JS
+    // KIỂM TRA ĐỘ DÀI MẬT KHẨU BẰNG JS
+    const passInput = form.querySelector('input[name="matKhau"]');
+    if (passInput.value.trim() !== "" && passInput.value.length < 8) {
+        const passBox = passInput.closest(".input-box");
+        passBox.classList.add("has-error");
+        passBox.querySelector(".error span").textContent = "Mật khẩu phải có tối thiểu 8 ký tự";
+        isValid = false;
+    }
+
     const emailInput = form.querySelector('input[name="email"]');
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (emailInput.value.trim() !== "" && !emailPattern.test(emailInput.value)) {
@@ -173,7 +182,6 @@ form.addEventListener("submit", function (e) {
         isValid = false;
     }
 
-    // 3. Kiểm tra khớp mật khẩu
     const pass = form.querySelector('input[name="matKhau"]').value;
     const confirm = form.querySelector('input[name="nhapLaiMatKhau"]').value;
     
@@ -184,7 +192,6 @@ form.addEventListener("submit", function (e) {
         isValid = false;
     }
 
-    // Ngăn chặn submit nếu có lỗi
     if (!isValid) {
         e.preventDefault();
     }

@@ -5,7 +5,7 @@
     require('php/client/getObjectById.php');
     
     if(!isset($_SESSION['idNguoiDung'])) {
-        echo "<script>alert('Vui lòng đăng nhập!'); window.location.href='login.php';</script>";
+        echo "<script>alert('Vui lòng đăng nhập!'); window.location.href='dangNhap.php';</script>";
         exit;
     }
 

@@ -72,7 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['btn_dat_hang'])) {
             // Nối chuỗi cho email
             $listSP_Email .= "<li>{$spInfo['ten']} - SL: $soLuongMua - Giá: ".number_format($giaHienTai)."đ</li>";
         }
-
         // Xóa giỏ
         mysqli_query($con, "DELETE FROM ct_gio_hang WHERE id_gio_hang = '{$gioHang['id']}'");
         mysqli_query($con, "UPDATE gio_hang SET so_luong_sp = 0 WHERE id = '{$gioHang['id']}'");

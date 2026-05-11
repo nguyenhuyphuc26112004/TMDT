@@ -144,7 +144,7 @@ if (session_status() == PHP_SESSION_NONE) {
         <div class="empty-cart-container">
             <i class="fa-solid fa-cart-shopping" style="font-size: 80px; color: #ddd; margin-bottom: 20px;"></i>
             <h1 class="gio-hang-thong-bao">Giỏ hàng của bạn đang trống</h1>
-            <a href="index.php" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Quay lại cửa hàng</a>
+            <a href="trangChu.php" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Quay lại cửa hàng</a>
         </div>';
     } else {
         $cTGioHang = getCartDetailByCart($con, $gioHang['id']);
